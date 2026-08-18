@@ -118,7 +118,8 @@ for Contact.
 [ ] Tutorial (tutorial.html)
 [ ] About (about.html) — Stoddard-Neel method, ecological forestry,
     philosophy behind Pinecraft
-[ ] Contact (contact.html) — contact info + link to Jones Center Land & Eco site
+[x] Contact (contact.html) — contact info, link to the Landscape Ecology
+    Lab, and a contact form (mailto-based for now, see backlog)
 [ ] Link to the Forestry article about Pinecraft (decide where it goes —
     About page? Its own press mention? Footer?)
 
@@ -133,3 +134,8 @@ BACKLOG / IDEAS (not yet scheduled)
     streaming
     will perform better for visitors on slow/mobile connections than a
     single fixed-quality file. Not urgent; current setup works fine for now.
+[ ] Set up a proper form backend for the Contact page (e.g. Formspree) so
+    submissions actually land in an inbox. Currently the form builds a
+    mailto: link and hands off to the visitor's own email client — works,
+    but only if they have one configured as their system default, and the
+    email comes from their address rather than through a real handler.

@@ -66,7 +66,7 @@ p { margin: 0 0 1em; }
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
-a:focus-visible, button:focus-visible {
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
   outline: 3px solid var(--accent-cyan);
   outline-offset: 2px;
 }
@@ -151,8 +151,15 @@ a:focus-visible, button:focus-visible {
   padding-bottom: 14px;
 }
 .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   text-decoration: none;
   color: var(--white);
+}
+.brand__icon {
+  height: 32px;
+  width: 32px;
 }
 .brand__mark {
   font-family: var(--font-display);
@@ -428,6 +435,14 @@ section.section--alt {
   text-shadow: none;
 }
 
+.heading-icon {
+  display: inline-block;
+  height: 0.85em;
+  width: auto;
+  vertical-align: -0.1em;
+  margin-right: 0.35em;
+}
+
 table.specs {
   width: 100%;
   border-collapse: collapse;
@@ -453,6 +468,40 @@ table.specs th {
   color: var(--ink-soft);
   font-style: italic;
 }
+
+/* ==========================================================================
+   Contact form
+   ========================================================================== */
+.contact-form {
+  max-width: 520px;
+  margin-top: 32px;
+}
+.form-field {
+  margin-bottom: 20px;
+}
+.form-field label {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  color: var(--forest-dark);
+  margin-bottom: 6px;
+}
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--ink);
+  background: var(--white);
+  border: 1px solid #e3ddc9;
+  border-radius: var(--radius);
+  padding: 10px 14px;
+}
+.form-field textarea { resize: vertical; }
 
 /* ==========================================================================
    Coming-soon page layout

@@ -13,7 +13,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Contact · Pinecraft</title>
-<meta name="description" content="Get in touch, and links to the Jones Center Land & Ecology team.">
+<meta name="description" content="Get in touch with the Pinecraft team by email or the contact form.">
 <link rel="icon" href="assets/img/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,13 +26,47 @@
 
 <main>
 <section class="wrap page-header">
-  <h1>Contact</h1>
-  <p class="lede">Get in touch, and links to the Jones Center Land &amp; Ecology team.</p>
+  <h1><img class="heading-icon" src="assets/img/logos/pine-mark.png" alt="">Contact</h1>
+  <p class="lede">There are several ways to contact us.</p>
 </section>
 
-<section class="wrap coming-soon-panel">
-  <div class="coming-soon-badge">Coming Soon</div>
-  <p>Contact info, a link to the Jones Center Land &amp; Ecology website, and other ways to get in touch.</p>
+<section class="wrap section">
+  <p>
+    You can email us directly at <a class="text-link" href="mailto:pinecraft@jonesctr.org">pinecraft@jonesctr.org</a>.
+  </p>
+  <p>
+    The Pinecraft VR project is led by the <a class="text-link" href="https://lab.jonesctr.org/cannon/" target="_blank" rel="noopener">Landscape Ecology Lab</a> at the Jones Center at Ichauway — visit the lab website for contact info, or fill out the form below.
+  </p>
+
+  <form id="contact-form" class="contact-form">
+    <div class="form-field">
+      <label for="cf-name">Name</label>
+      <input type="text" id="cf-name" name="name">
+    </div>
+    <div class="form-field">
+      <label for="cf-email">Email *</label>
+      <input type="email" id="cf-email" name="email" required>
+    </div>
+    <div class="form-field">
+      <label for="cf-affiliation">Affiliation</label>
+      <input type="text" id="cf-affiliation" name="affiliation">
+    </div>
+    <div class="form-field">
+      <label for="cf-reason">Topic *</label>
+      <select id="cf-reason" name="reason" required>
+        <option value="User Question" selected>User Question</option>
+        <option value="Support">Support</option>
+        <option value="Bug Report">Bug Report</option>
+        <option value="Media Inquiry">Media Inquiry</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label for="cf-message">Message *</label>
+      <textarea id="cf-message" name="message" rows="6" required></textarea>
+    </div>
+    <button type="submit" class="btn btn--primary">Send Message</button>
+  </form>
 </section>
 </main>
 
