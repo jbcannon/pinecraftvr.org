@@ -50,50 +50,47 @@ Ordered by what actually blocks what — not just top-to-bottom.
     (website repo; separate "pinecraftvr" repo reserved for the Unreal
     open-source project, once those files are shared)
 [x] git init, first commit, push to GitHub
-[x] GitHub Pages enabled, source = master branch root.
-[x] Previewing for now at https://jbcannon.github.io/pinecraftvr.org/ —
-    decided to fill in real content first and deal with the domain/DNS
-    later (see 1c below). CNAME file was removed and custom domain
-    unset for the moment so this URL renders directly instead of
-    redirecting to the not-yet-working pinecraftvr.org.
+[x] Default branch renamed master -> main; GitHub Pages source = main
+    branch root
+[x] Custom domain live at both pinecraftvr.org and www.pinecraftvr.org —
+    DNS confirmed pointed at GitHub Pages, CNAME file committed. See 1c
+    below for the one remaining check (HTTPS enforcement).
 
 --- 1b. FILL IN THE PLACEHOLDERS (any order) ---
-[ ] Create first GitHub Release (even a "v0.1-preview" tag is fine):
-      - attach the Windows .zip/executable as a Release asset
-      - attach media-source/pinecraftvr-demo.mp4 as a Release asset
-[ ] Update download.html: Download button href -> the Release download link
-[ ] Update index.html: Video section -> swap <p class="video-placeholder">
-    for the real <video> tag pointed at the Release asset URL (snippet is
-    already commented in index.html)
+[x] Create a GitHub Release for the Windows build — tag v1.0, kept
+    separate from the "media.01" release since this one's an actual
+    software build
+[x] Update download.html: Download button uses GitHub's "latest" URL
+    pattern (.../releases/latest/download/pinecraftvr-windows.zip), which
+    always serves whatever release is marked "Latest" — no link update
+    needed on future releases, AS LONG AS the uploaded asset keeps this
+    exact filename every time (pinecraftvr-windows.zip). The release TAG
+    can still be versioned (v1.1, v2.0, etc.) — only the asset filename
+    needs to stay fixed. If a future upload ever uses a different
+    filename, this link 404s until download.html is updated to match.
+[x] Update index.html: Video section wired to the real demo video
+    (compressed, hosted as a GitHub Release asset under the "media.01"
+    tag), with click-anywhere-to-play instead of forced autoplay
 [ ] Confirm/replace the placeholder System Requirements table on
     download.html with real specs
-[ ] Read through the "mixed-age forests" blurb on the landing page — decide
-    if it should stay this brief or say more
-[ ] Real logo files -> assets/img/logos/ (swap into partials/footer.html,
-    replacing the dashed placeholder boxes):
-      - Jones Center at Ichauway
-      - TheDevHouse
-      - USDA NRCS
-[ ] Pinecraft logo/wordmark (optional) -> swap into partials/header.html
-[ ] Favicon -> assets/img/favicon.png
+[x] Rewrote the "mixed-age forests" blurb and most other landing-page copy
+[x] Real logo files -> assets/img/logos/ (Jones Center, Devhouse Games,
+    USDA NRCS) wired into partials/footer.html
+[x] Pinecraft wordmark + favicon icon in partials/header.html
+[x] Favicon -> assets/img/favicon.png (three-tree mark; alternate seedling
+    version explored and set aside)
 [ ] Optional: short (5-15s), silent, lightweight loop clip -> assets/video/
-    hero-loop.mp4, for the hero background video (structure's already there)
+    hero-loop.mp4, for the hero background video (structure's already
+    there, still 404s with no file)
 
---- 1c. DOMAIN / DNS (once 1b above is done) ---
-[ ] Re-add the CNAME file (contents: pinecraftvr.org) and commit/push it
-[ ] At your domain registrar, point pinecraftvr.org's DNS at GitHub Pages —
-    do this as early in this step as you can, since DNS changes take a
-    while (up to ~48h, often much faster) to propagate.
-      A records (apex domain) -> 185.199.108.153
-                                  185.199.109.153
-                                  185.199.110.153
-                                  185.199.111.153
-      (optional) www CNAME -> jbcannon.github.io
-    Ask me for help with this when you get here — the exact steps depend on
-    your registrar.
-[ ] Once DNS is confirmed pointed correctly, set the custom domain back in
-    GitHub repo Settings > Pages (or ask me — it's one API call)
-[ ] Confirm HTTPS is enabled once DNS propagates (GitHub Pages setting)
+--- 1c. DOMAIN / DNS (done) ---
+[x] CNAME file committed (www.pinecraftvr.org)
+[x] DNS confirmed pointed at GitHub Pages for both the apex domain and
+    www subdomain
+[x] Custom domain set in GitHub repo Settings > Pages
+[ ] Double-check HTTPS enforcement is turned on in Settings > Pages —
+    worth a quick look next time you're in there, wasn't explicitly
+    confirmed
 
 ===============================================================================
 PHASE 2 — OPEN SOURCE UNREAL PROJECT
@@ -122,6 +119,8 @@ for Contact.
     Lab, and a contact form (mailto-based for now, see backlog)
 [ ] Link to the Forestry article about Pinecraft (decide where it goes —
     About page? Its own press mention? Footer?)
+[ ] Gallery (gallery.html) — screenshots and renders gallery, new nav item
+    added as a stub, matches the backlog "Screenshots gallery" idea below
 
 ===============================================================================
 BACKLOG / IDEAS (not yet scheduled)
