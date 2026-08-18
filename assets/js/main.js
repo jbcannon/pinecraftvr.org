@@ -19,3 +19,19 @@ document.addEventListener('click', function (e) {
   toggle.setAttribute('aria-expanded', String(!expanded));
   nav.classList.toggle('is-open');
 });
+
+// Videos marked .js-scroll-play (e.g. the homepage demo reel) start
+// loading right away but only play once scrolled into view, and pause
+// again once scrolled past — so visitors aren't stuck rewinding.
+document.querySelectorAll('.js-scroll-play').forEach(function (video) {
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        video.play();
+      } else {
+        video.pause();
+      }
+    });
+  }, { threshold: 0.5 });
+  observer.observe(video);
+});

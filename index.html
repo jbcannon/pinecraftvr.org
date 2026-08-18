@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YC16CTT1N0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-YC16CTT1N0');
+</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pinecraft</title>
@@ -54,7 +63,7 @@
     </div>
 
     <div class="video-frame">
-      <video controls controlsList="nodownload" preload="none">
+      <video class="js-scroll-play" controls controlsList="nodownload" muted playsinline preload="auto">
         <source src="https://github.com/jbcannon/pinecraftvr.org/releases/download/media.01/pinecraftvr-demo_compressed.mp4" type="video/mp4">
       </video>
     </div>
