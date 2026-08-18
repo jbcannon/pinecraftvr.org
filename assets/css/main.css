@@ -89,7 +89,10 @@ a:focus-visible, button:focus-visible {
   cursor: pointer;
   transition: transform 0.12s ease, background 0.12s ease;
 }
-.btn:hover { transform: translateY(-1px); }
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 3px rgba(63,224,232,0.22), 0 6px 18px rgba(63,224,232,0.25);
+}
 .btn--primary {
   background: var(--forest-mid);
   color: var(--accent-lime);
@@ -101,11 +104,34 @@ a:focus-visible, button:focus-visible {
   border: 2px solid var(--forest-dark);
 }
 .btn--ghost:hover { background: var(--forest-dark); color: var(--cream); }
+/* For ghost buttons sitting on the dark hero — plain .btn--ghost (dark
+   text/border) nearly disappears against the hero's dark green overlay. */
+.btn--ghost-inverse {
+  background: transparent;
+  color: var(--cream);
+  border: 2px solid var(--accent-cyan);
+}
+.btn--ghost-inverse:hover {
+  background: var(--accent-cyan);
+  color: var(--forest-dark);
+  box-shadow: 0 0 26px rgba(63,224,232,0.5);
+}
 .btn--cyan {
   background: var(--accent-cyan);
   color: var(--forest-dark);
 }
 .btn--cyan:hover { background: #63e8ee; }
+
+/* Inline text links (e.g. "Stand Generator" mentions inline in copy) */
+.text-link {
+  color: var(--forest-dark);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--accent-cyan);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+.text-link:hover { color: var(--accent-cyan); }
 
 /* ==========================================================================
    Header / nav
@@ -225,20 +251,28 @@ a:focus-visible, button:focus-visible {
      gradient (still shown via .hero__overlay) looks fine on its own. */
   .hero__bg-video { display: none; }
 }
-.hero__inner {
+.hero__grid {
   position: relative;
   z-index: 2;
   display: grid;
-  gap: 20px;
-  max-width: 760px;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 40px;
 }
-.hero__eyebrow {
-  font-family: var(--font-display);
-  color: var(--accent-cyan);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-size: 0.85rem;
-  font-weight: 700;
+.hero__inner {
+  display: grid;
+  gap: 20px;
+  max-width: 700px;
+}
+.hero__logo {
+  width: 260px;
+  height: auto;
+  opacity: 0.9;
+  justify-self: end;
+}
+@media (max-width: 900px) {
+  .hero__grid { grid-template-columns: 1fr; }
+  .hero__logo { display: none; }
 }
 .hero h1 {
   font-size: clamp(2.4rem, 5vw, 3.6rem);
@@ -316,6 +350,12 @@ section.section--alt {
   border-radius: var(--radius);
   padding: 24px;
   border: 1px solid #e3ddc9;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 10px 26px rgba(63,224,232,0.2);
 }
 .card h3 {
   font-size: 1.1rem;
@@ -324,23 +364,69 @@ section.section--alt {
   align-items: center;
   gap: 8px;
 }
+/* "Coming soon" cards get a corner ribbon instead of the header-badge
+   treatment other cards would get — kept deliberately different from a
+   plain striped background, which read as a generic placeholder pattern. */
 .card--soon {
-  background: repeating-linear-gradient(135deg, #fbfaf4, #fbfaf4 10px, #f2eeda 10px, #f2eeda 20px);
-  border-style: dashed;
+  position: relative;
+  overflow: hidden;
+  background: var(--cream-dim);
+  border: 1px solid var(--forest-mauve);
 }
-.card--soon h3::after {
-  content: "Soon";
-  font-family: var(--font-display);
-  font-size: 0.6rem;
+.card--soon::before {
+  content: "Coming soon";
+  position: absolute;
+  top: 16px;
+  right: -38px;
+  width: 150px;
+  transform: rotate(45deg);
   background: var(--forest-mauve);
   color: var(--white);
-  padding: 2px 7px;
-  border-radius: 999px;
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
+  text-align: center;
+  padding: 4px 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
 }
 
-.tag-mark { color: var(--accent-cyan); }
+/* Feature bullet dots "breathe" (scale + glow) to draw a little life into
+   the list, then pop harder on hover as direct feedback. */
+.tag-mark {
+  display: inline-block;
+  color: var(--accent-cyan);
+  animation: tag-breathe 2s ease-in-out infinite;
+}
+@keyframes tag-breathe {
+  0%, 100% { transform: scale(1); text-shadow: 0 0 3px rgba(63,224,232,0.3); }
+  50% { transform: scale(2); text-shadow: 0 0 20px rgba(63,224,232,1); }
+}
+.card:hover .tag-mark {
+  animation-play-state: paused;
+  transform: scale(2.2);
+  text-shadow: 0 0 22px rgba(63,224,232,1);
+  transition: transform 0.18s ease, text-shadow 0.18s ease;
+}
+/* Coming-soon cards stay hands-off — no breathing dot, no hover pop, no
+   glow, no card lift — so they visibly read as "not yet interactive" next
+   to the live features around them. */
+.card--soon .tag-mark {
+  color: var(--forest-mauve);
+  animation: none;
+  transform: none;
+  text-shadow: none;
+}
+.card--soon:hover {
+  transform: none;
+  border-color: var(--forest-mauve);
+  box-shadow: none;
+}
+.card--soon:hover .tag-mark {
+  transform: none;
+  text-shadow: none;
+}
 
 table.specs {
   width: 100%;
@@ -418,22 +504,11 @@ table.specs th {
   margin: 0 0 32px;
 }
 .credits__logos a { text-decoration: none; }
-.logo-placeholder {
-  min-width: 160px;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 8px 16px;
-  background: rgba(255,255,255,0.06);
-  border: 1px dashed rgba(255,255,255,0.35);
-  border-radius: var(--radius);
-  color: var(--cream-dim);
-  font-size: 0.85rem;
-  font-family: var(--font-display);
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+.credit-logo {
+  height: 48px;
+  width: auto;
+  max-width: 180px;
+  object-fit: contain;
 }
 .footer-links {
   display: flex;
