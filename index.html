@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pinecraft</title>
+<meta name="description" content="Pinecraft is a virtual reality training simulator for pine stand marking, inventory, and mixed-age forestry.">
+<link rel="icon" href="/assets/img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/main.css">
+</head>
+<body>
+
+<div data-include="/partials/header.html"></div>
+
+<main>
+
+<section class="hero">
+  <!-- TODO: background loop video. No file yet — this silently shows nothing
+       and falls back to the plain gradient (via .hero__overlay) until one's
+       added. When ready: export a short (5-15s), SILENT, lightweight (a few
+       MB) clip — trimmed from the demo footage or fresh capture — and drop
+       it at assets/video/hero-loop.mp4. Hidden on mobile (see main.css) to
+       save data. -->
+  <video class="hero__bg-video" autoplay muted loop playsinline>
+    <source src="/assets/video/hero-loop.mp4" type="video/mp4">
+  </video>
+  <div class="hero__overlay"></div>
+
+  <div class="wrap hero__inner">
+    <p class="hero__eyebrow">More to come</p>
+    <h1>Pinecraft</h1>
+    <p class="lede">
+      A forestry training simulator. Practice marking pine stands, exploring
+      mixed-age structure, and seeing the results of your calls — all in VR.
+    </p>
+    <div class="hero__actions">
+      <a class="btn btn--primary" href="download.html">Download Pinecraft</a>
+      <a class="btn btn--ghost" href="#video">Watch the Demo</a>
+    </div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     Video demo
+     ========================================================================== -->
+<section id="video" class="section">
+  <div class="wrap">
+    <div class="section__heading">
+      <h2>See It In Action</h2>
+      <p>A quick look at marking a stand in Pinecraft.</p>
+    </div>
+
+    <div class="video-frame">
+      <!-- TODO: once pinecraftvr-demo.mp4 is uploaded as a GitHub Release asset,
+           replace this placeholder with:
+           <video controls preload="none" poster="/assets/img/video-poster.jpg">
+             <source src="https://github.com/USERNAME/REPO/releases/download/TAG/pinecraftvr-demo.mp4" type="video/mp4">
+           </video> -->
+      <p class="video-placeholder">Demo video coming online here shortly</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     Description / why mixed-age forestry
+     ========================================================================== -->
+<section class="section section--alt">
+  <div class="wrap">
+    <div class="grid grid--2">
+      <div>
+        <h2>Forestry Training Simulator</h2>
+        <p>
+          Pinecraft lets you practice managing mixed-age pine stands in
+          virtual reality — mark trees, walk the stand, and see the forest
+          you're building before you ever step outside.
+        </p>
+      </div>
+      <div>
+        <!-- TODO: keep this brief (2-3 sentences) unless you decide the
+             audience needs more background on mixed-age forestry itself. -->
+        <h3>Why Mixed-Age Forests?</h3>
+        <p>
+          Mixed-age pine management calls for judgment that's hard to teach
+          from a book — you have to see the stand and make the call.
+          Pinecraft gives you a low-stakes place to build that judgment
+          before you're marking trees in the field.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     Features
+     ========================================================================== -->
+<section class="section">
+  <div class="wrap">
+    <div class="section__heading">
+      <h2>Features</h2>
+    </div>
+
+    <div class="grid grid--3">
+      <div class="card">
+        <h3><span class="tag-mark">●</span> Load Your Own Stands</h3>
+        <p>Represent pine stands from a CSV — use a built-in stand or bring your own data.</p>
+      </div>
+      <div class="card">
+        <h3><span class="tag-mark">●</span> Mark Trees</h3>
+        <p>Paint trees for marking directly in VR, just like you would in the field.</p>
+      </div>
+      <div class="card">
+        <h3><span class="tag-mark">●</span> View With & Without Marks</h3>
+        <p>Toggle marked trees on and off to compare before and after.</p>
+      </div>
+      <div class="card">
+        <h3><span class="tag-mark">●</span> POV & Bird's-Eye Views</h3>
+        <p>Walk the stand at eye level, or pull up for a bird's-eye view of the whole area.</p>
+      </div>
+      <div class="card">
+        <h3><span class="tag-mark">●</span> Export Marked Trees</h3>
+        <p>Export your marking session to take the results back out of VR.</p>
+      </div>
+      <div class="card card--soon">
+        <h3>Rapid Forest Structure View</h3>
+        <p>Quickly visualize stand structure across a whole area.</p>
+      </div>
+      <div class="card card--soon">
+        <h3>Harvest Statistics</h3>
+        <p>Stumpage and other harvest statistics, calculated from your marking session.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     Open source Unreal project + Customize
+     ========================================================================== -->
+<section class="section section--alt">
+  <div class="wrap grid grid--2">
+    <div>
+      <h2>Open Source</h2>
+      <p>
+        The uncompiled Unreal Engine project is available for anyone who
+        wants to explore, extend, or adapt Pinecraft.
+      </p>
+      <!-- TODO: link straight to the Unreal project's GitHub repo once it's
+           pushed — no local page for this, the repo's README is the docs. -->
+      <a class="btn btn--cyan" href="#" target="_blank" rel="noopener">View on GitHub (Coming Soon)</a>
+    </div>
+    <div>
+      <h2>Customize Your Stand</h2>
+      <p>
+        Build your own stand from a CSV, or adapt Pinecraft to your own
+        forest — most real forests are more than one species anyway. Both
+        are coming soon on the Customize page.
+      </p>
+      <a class="btn btn--ghost" href="customize.html">Learn More</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div data-include="/partials/footer.html"></div>
+
+<script src="/assets/js/main.js"></script>
+</body>
+</html>

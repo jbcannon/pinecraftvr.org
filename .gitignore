@@ -1,0 +1,6 @@
+.DS_Store
+Thumbs.db
+
+# Large source media that gets uploaded as GitHub Release assets, not
+# committed to the repo (keeps the git history small and fast to clone).
+/media-source/

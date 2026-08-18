@@ -1,0 +1,126 @@
+PINECRAFTVR.ORG — TODO LIST
+Last updated: 2026-08-17
+
+HOW TO USE THIS FILE
+  Pick up wherever the unchecked boxes start. Phase 1 = the bare-bones
+  landing page. Later phases = the "Coming Soon" pages, filled in one at a
+  time whenever that piece is ready. Check items off as [x] when done.
+
+===============================================================================
+PHASE 0 — SCAFFOLDING (done)
+===============================================================================
+[x] Site built as plain HTML/CSS/JS — no build step, no Jekyll, no Ruby.
+    (Tried a Jekyll/Ruby setup first; the Windows compiler toolchain needed
+    for native gems turned out broken/not worth fighting, and a
+    fetch()-based include script gets the same "edit once, updates
+    everywhere" benefit for the nav/footer without any of that.)
+[x] Color palette + fonts pulled from gameplay/pause-menu screenshots
+[x] Landing page draft (index.html) with all requested sections
+[x] Shared header/footer via partials/header.html + partials/footer.html,
+    loaded into every page by assets/js/main.js — edit those two files,
+    every page updates automatically, no copy-pasting
+[x] Site structure settled after a few rounds of trimming:
+      - No separate Install page — folded into Home's download section
+      - No separate Open Source page — footer link goes straight to the
+        Unreal project's GitHub repo once it's pushed (repo README is
+        the documentation, no reason to duplicate it here)
+      - Stand Generator + Your Forest merged into one page, "Customize"
+        (dual content, one nav link)
+      - Added Download as a real page (not a stub) — the download button
+        and system requirements live there, off of Home
+    Current top nav: Home, Download, Customize, Tutorial, About
+    Current footer links: GitHub (external), Contact
+[x] Demo video moved out of repo into media-source/ (gitignored — too big
+    for git, ~122MB)
+[x] Footer credit line links to both the Landscape Ecology Lab
+    (lab.jonesctr.org/cannon/) and The Jones Center at Ichauway
+    (jonesctr.org)
+[x] Hero section wired up for a looping background video (assets/video/
+    hero-loop.mp4) with a dark overlay so text stays readable — no file
+    yet, so it currently just shows the plain gradient. Hidden on mobile
+    to save data.
+
+===============================================================================
+PHASE 1 — GET THE LANDING PAGE LIVE
+===============================================================================
+Ordered by what actually blocks what — not just top-to-bottom.
+
+--- 1a. START THESE FIRST (do in this order — each depends on the last) ---
+[ ] Create the GitHub repo (suggest name: pinecraftvr, or pinecraftvr.org)
+[ ] git init, first commit, push to GitHub
+[ ] At your domain registrar, point pinecraftvr.org's DNS at GitHub Pages —
+    do this as early as possible, even before the next steps: DNS changes
+    can take hours to propagate, so it should be running in the background
+    while you do everything else, not something you wait to start.
+      A records (apex domain) -> 185.199.108.153
+                                  185.199.109.153
+                                  185.199.110.153
+                                  185.199.111.153
+      (optional) www CNAME -> <yourusername>.github.io
+    Ask me for help with this when you get here — the exact steps depend on
+    your registrar.
+[ ] In repo Settings > Pages: set source to the main branch, custom domain
+    pinecraftvr.org (this reads the CNAME file already in the repo)
+[ ] Confirm HTTPS is enabled once DNS propagates (GitHub Pages setting) —
+    this is the last step; nothing else waits on it
+
+--- 1b. MAKE DOWNLOAD ACTUALLY WORK (needs the repo from 1a, not DNS) ---
+[ ] Create first GitHub Release (even a "v0.1-preview" tag is fine):
+      - attach the Windows .zip/executable as a Release asset
+      - attach media-source/pinecraftvr-demo.mp4 as a Release asset
+[ ] Update download.html: Download button href -> the Release download link
+[ ] Update index.html: Video section -> swap <p class="video-placeholder">
+    for the real <video> tag pointed at the Release asset URL (snippet is
+    already commented in index.html)
+
+--- 1c. QUICK CONTENT FIXES (no blockers — do these anytime, e.g. while
+         waiting on DNS to propagate) ---
+[ ] Confirm/replace the placeholder System Requirements table on
+    download.html with real specs
+[ ] Read through the "mixed-age forests" blurb on the landing page — decide
+    if it should stay this brief or say more
+
+--- 1d. POLISH (nice-to-have, not launch-blocking) ---
+[ ] Real logo files -> assets/img/logos/ (swap into partials/footer.html,
+    replacing the dashed placeholder boxes):
+      - Jones Center at Ichauway
+      - TheDevHouse
+      - USDA NRCS
+[ ] Pinecraft logo/wordmark (optional) -> swap into partials/header.html
+[ ] Favicon -> assets/img/favicon.png
+[ ] Optional: short (5-15s), silent, lightweight loop clip -> assets/video/
+    hero-loop.mp4, for the hero background video (structure's already there)
+
+===============================================================================
+PHASE 2 — OPEN SOURCE UNREAL PROJECT
+===============================================================================
+[ ] Decide on a license for the Unreal project files
+[ ] Push the uncompiled Unreal project to its own GitHub repo
+[ ] Point the "Open Source" links at that repo (partials/footer.html and
+    the button on index.html both have a TODO comment marking the spot)
+[ ] Remove the "coming-soon" class + Soon badge from those two links once done
+
+===============================================================================
+PHASE 3 — REMAINING PAGES (tackle in whatever order makes sense)
+===============================================================================
+Each of these already exists as a working stub page with nav wired up.
+To bring one online: replace its "Coming Soon" section with the real
+content, then remove its "coming-soon" class + Soon badge from the nav
+link — in partials/header.html for top-nav pages, partials/footer.html
+for Contact.
+
+[ ] Customize (customize.html) — Stand Generator tool + Your Forest info,
+    as two sections on this one page
+[ ] Tutorial (tutorial.html)
+[ ] About (about.html) — Stoddard-Neel method, ecological forestry,
+    philosophy behind Pinecraft
+[ ] Contact (contact.html) — contact info + link to Jones Center Land & Eco site
+[ ] Link to the Forestry article about Pinecraft (decide where it goes —
+    About page? Its own press mention? Footer?)
+
+===============================================================================
+BACKLOG / IDEAS (not yet scheduled)
+===============================================================================
+[ ] Screenshots gallery on landing page (beyond the demo video)
+[ ] Analytics (optional — decide if you want any visitor tracking)
+[ ] Basic support/FAQ page once you're ready to take on support questions
