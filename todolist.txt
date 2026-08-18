@@ -110,8 +110,11 @@ content, then remove its "coming-soon" class + Soon badge from the nav
 link — in partials/header.html for top-nav pages, partials/footer.html
 for Contact.
 
-[ ] Customize (customize.html) — Stand Generator tool + Your Forest info,
-    as two sections on this one page
+[x] Customize (customize.html) — fully built out: a working Stand
+    Generator (settings, live preview with defect visualization, CSV
+    download) plus a Source Code blurb pointing at the still-pending
+    Open Source repo. The earlier "Your Forest" (species-mix
+    customization) idea was dropped from this page.
 [ ] Tutorial (tutorial.html)
 [ ] About (about.html) — Stoddard-Neel method, ecological forestry,
     philosophy behind Pinecraft
@@ -133,6 +136,9 @@ BACKLOG / IDEAS (not yet scheduled)
     streaming
     will perform better for visitors on slow/mobile connections than a
     single fixed-quality file. Not urgent; current setup works fine for now.
+[ ] Confirm the real Export folder path for customize.html's "Loading
+    Your Stand Into Pinecraft" note — currently a "[folder path TBD]"
+    placeholder, unconfirmed against an actual unzipped build.
 [ ] Set up a proper form backend for the Contact page (e.g. Formspree) so
     submissions actually land in an inbox. Currently the form builds a
     mailto: link and hands off to the visitor's own email client — works,

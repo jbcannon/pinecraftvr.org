@@ -89,6 +89,11 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   cursor: pointer;
   transition: transform 0.12s ease, background 0.12s ease;
 }
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
 .btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 0 0 3px rgba(63,224,232,0.22), 0 6px 18px rgba(63,224,232,0.25);
@@ -319,6 +324,7 @@ section.section--alt {
 }
 
 .video-frame {
+  position: relative;
   background: var(--forest-dark);
   border-radius: var(--radius);
   overflow: hidden;
@@ -332,6 +338,48 @@ section.section--alt {
   height: 100%;
   border: none;
   display: block;
+}
+/* Covers everything except the native control bar strip at the bottom,
+   so a click anywhere on the video toggles play/pause without ever
+   fighting the browser's own controls (seek bar, volume, fullscreen) —
+   clicks on that strip fall straight through to the video underneath. */
+.video-click-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 44px;
+  cursor: pointer;
+  z-index: 1;
+}
+.video-play-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: rgba(34,40,28,0.55);
+  border: 4px solid var(--accent-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.video-play-icon::after {
+  content: "";
+  border-style: solid;
+  border-width: 29px 0 29px 45px;
+  border-color: transparent transparent transparent var(--accent-cyan);
+  margin-left: 11px;
+}
+.video-click-overlay:hover .video-play-icon {
+  transform: translate(-50%, -50%) scale(1.08);
+  background: rgba(34,40,28,0.75);
+}
+.video-frame.is-playing .video-play-icon {
+  display: none;
 }
 .video-placeholder {
   color: var(--cream-dim);
@@ -470,11 +518,104 @@ table.specs th {
 }
 
 /* ==========================================================================
+   Stand Generator preview
+   ========================================================================== */
+.stand-results {
+  display: none;
+}
+.stand-results.is-visible { display: block; }
+.stand-preview {
+  position: relative;
+  margin-top: 8px;
+  background: var(--cream-dim);
+  border: 1px solid #e3ddc9;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.stand-preview canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+  cursor: crosshair;
+}
+.stand-preview-tooltip {
+  position: absolute;
+  display: none;
+  pointer-events: none;
+  background: var(--ink);
+  color: var(--cream);
+  font-size: 0.8rem;
+  padding: 6px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  transform: translate(-50%, -120%);
+  z-index: 2;
+}
+.stand-preview-tooltip.is-visible { display: block; }
+.stand-preview-tooltip--dark {
+  background: var(--white);
+  color: var(--ink);
+  border: 1px solid #e3ddc9;
+}
+.stand-preview-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 10px 2px;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+.stand-preview-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.legend-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.legend-swatch--ring {
+  background: rgba(127,194,92,0.85);
+  box-shadow: 0 0 0 1.5px rgba(232,151,63,0.9);
+}
+.legend-swatch--firescar {
+  background: rgba(127,194,92,0.85);
+  box-shadow: 0 0 0 1.5px rgba(25,22,20,0.95);
+}
+
+.stand-histogram {
+  margin-top: 24px;
+  background: var(--white);
+  border: 1px solid #e3ddc9;
+  border-radius: var(--radius);
+  padding: 16px;
+  position: relative;
+}
+.stand-histogram h4 {
+  margin: 0 0 12px;
+  font-size: 0.9rem;
+  color: var(--forest-dark);
+}
+.stand-histogram canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ==========================================================================
    Contact form
    ========================================================================== */
 .contact-form {
   max-width: 520px;
   margin-top: 32px;
+}
+#stand-generator-form {
+  background: var(--white);
+  border: 1px solid #e3ddc9;
+  border-radius: var(--radius);
+  padding: 24px;
 }
 .form-field {
   margin-bottom: 20px;
@@ -502,6 +643,41 @@ table.specs th {
   padding: 10px 14px;
 }
 .form-field textarea { resize: vertical; }
+.slider-field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.slider-field input[type="range"] {
+  flex: 1;
+  accent-color: var(--accent-cyan);
+}
+.slider-field input[type="number"] {
+  width: 80px;
+  flex: none;
+}
+.checkbox-field {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+.checkbox-field label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: none;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+.checkbox-field input[type="checkbox"],
+.checkbox-field input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  accent-color: var(--accent-cyan);
+}
 
 /* ==========================================================================
    Coming-soon page layout

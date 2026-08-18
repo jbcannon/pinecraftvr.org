@@ -48,22 +48,24 @@ if (contactForm) {
   });
 }
 
-// Click anywhere on a .video-frame to toggle play/pause, not just the
-// native control bar's small play button — except over the control bar
-// itself (bottom ~44px), which needs to keep handling its own clicks
-// (seek bar, volume, fullscreen) without our handler fighting it.
-document.querySelectorAll('.video-frame').forEach(function (frame) {
-  var video = frame.querySelector('video');
-  if (!video) return;
-  var CONTROL_BAR_PX = 44;
-  frame.addEventListener('click', function (e) {
-    var rect = video.getBoundingClientRect();
-    var clickY = e.clientY - rect.top;
-    if (clickY > rect.height - CONTROL_BAR_PX) return;
+// .video-click-overlay sits over the video (see main.css — it stops short
+// of the native control bar strip), so a click anywhere on it toggles
+// play/pause without ever competing with the browser's own controls.
+document.querySelectorAll('.video-click-overlay').forEach(function (overlay) {
+  var video = overlay.previousElementSibling;
+  if (!video || video.tagName !== 'VIDEO') return;
+  var frame = overlay.closest('.video-frame');
+
+  overlay.addEventListener('click', function () {
     if (video.paused) {
       video.play();
     } else {
       video.pause();
     }
   });
+
+  // Reflects true playback state (not just clicks through this overlay),
+  // so the big play icon also reappears if paused via the native controls.
+  video.addEventListener('play', function () { frame.classList.add('is-playing'); });
+  video.addEventListener('pause', function () { frame.classList.remove('is-playing'); });
 });

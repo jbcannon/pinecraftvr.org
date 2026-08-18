@@ -27,20 +27,173 @@
 <main>
 <section class="wrap page-header">
   <h1>Customize</h1>
-  <p class="lede">Build your own stand from a CSV, or adapt Pinecraft to your own forest.</p>
+  <p class="lede">Pinecraft is open source. You can use the <a class="text-link" href="#stand-generator">Stand Generator</a> below to make custom maps, or make your own complete modification by modifying our source code.</p>
+  <a class="btn btn--cyan" href="#" target="_blank" rel="noopener">View on GitHub (Coming Soon)</a>
 </section>
 
-<section class="wrap coming-soon-panel">
-  <div class="coming-soon-badge">Coming Soon</div>
+<section class="wrap section">
+  <div class="section__heading">
+    <h2 id="stand-generator"><img class="heading-icon" src="assets/img/logos/pine-mark.png" alt="">Stand Generator</h2>
+    <p>Generate a simulated longleaf pine stand and download it as a CSV ready to load into Pinecraft:</p>
+  </div>
 
-  <div class="grid grid--2" style="margin-top: 12px;">
-    <div>
-      <h3 id="stand-generator"><img class="heading-icon" src="assets/img/logos/pine-mark.png" alt="">Stand Generator</h3>
-      <p>A browser tool for generating your own pine stand CSV files to load into Pinecraft — no more hand-editing spreadsheets. Planned as the first piece of this page to go live.</p>
+  <div class="form-field checkbox-field" style="max-width: 640px;">
+    <label><input type="radio" name="sg-units" value="metric" checked> Metric (ha, cm, m)</label>
+    <label><input type="radio" name="sg-units" value="us"> US units (acres, in, ft)</label>
+  </div>
+
+  <form id="stand-generator-form" class="contact-form" style="max-width: 640px;">
+    <div class="form-field checkbox-field">
+      <label><input type="radio" name="sg-pattern" value="random" checked> Natural (random)</label>
+      <label><input type="radio" name="sg-pattern" value="grid"> Planted (grid)</label>
     </div>
-    <div>
-      <h3><img class="heading-icon" src="assets/img/logos/pine-mark.png" alt="">Your Forest</h3>
-      <p>Information on getting a version of Pinecraft adapted for your own forest — most forests are more than one species, and this covers getting your own mix built in.</p>
+
+    <div class="grid grid--2">
+      <div class="form-field">
+        <label for="sg-width">Plot Width (<span id="sg-width-unit">m</span>)</label>
+        <div class="slider-field">
+          <input type="range" id="sg-width-range" min="10" max="250" step="1" value="100">
+          <input type="number" id="sg-width" name="width" value="100" min="1" step="any" required>
+        </div>
+      </div>
+      <div class="form-field">
+        <label for="sg-height">Plot Height (<span id="sg-height-unit">m</span>)</label>
+        <div class="slider-field">
+          <input type="range" id="sg-height-range" min="10" max="250" step="1" value="100">
+          <input type="number" id="sg-height" name="height" value="100" min="1" step="any" required>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="sg-density">Density (trees / <span id="sg-density-unit">ha</span>)</label>
+      <div class="slider-field">
+        <input type="range" id="sg-density-range" min="10" max="750" step="5" value="150">
+        <input type="number" id="sg-density" name="density" value="150" min="1" step="any" required>
+      </div>
+    </div>
+
+    <div class="grid grid--2">
+      <div class="form-field">
+        <label for="sg-qmd">Target QMD (<span id="sg-qmd-unit">cm</span>)</label>
+        <div class="slider-field">
+          <input type="range" id="sg-qmd-range" min="5" max="80" step="0.5" value="30">
+          <input type="number" id="sg-qmd" name="qmd" value="30" min="0.1" max="80" step="any" required>
+        </div>
+      </div>
+      <div class="form-field">
+        <label for="sg-sd">DBH Std. Dev. (<span id="sg-sd-unit">cm</span>)</label>
+        <div class="slider-field">
+          <input type="range" id="sg-sd-range" min="1" max="30" step="0.5" value="6">
+          <input type="number" id="sg-sd" name="sd" value="6" min="0" step="any" required>
+        </div>
+      </div>
+    </div>
+
+    <details class="form-field">
+      <summary style="cursor:pointer; font-family:var(--font-display); font-weight:700; text-transform:uppercase; font-size:0.8rem; letter-spacing:0.04em; color:var(--forest-dark);">Advanced Settings</summary>
+
+      <div class="form-field" style="margin-top:16px;">
+        <label for="sg-seed">Random Seed</label>
+        <input type="number" id="sg-seed" name="seed" value="" step="1" placeholder="(random each time)">
+        <p class="note" style="margin-top:6px;">Blank by default, so every stand is different. Enter a number to reproduce the same stand again later.</p>
+      </div>
+
+      <p class="note" style="margin-top:16px; margin-bottom:0;">Defect Rates (%)</p>
+      <div class="grid grid--2" style="margin-top:8px;">
+        <div class="form-field">
+          <label for="sg-snag">Snag (dead)</label>
+          <div class="slider-field">
+            <input type="range" id="sg-snag-range" min="0" max="30" step="0.1" value="4">
+            <input type="number" id="sg-snag" name="snag" value="4" min="0" max="30" step="any">
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="sg-leaning">Leaning</label>
+          <div class="slider-field">
+            <input type="range" id="sg-leaning-range" min="0" max="30" step="0.1" value="3.8">
+            <input type="number" id="sg-leaning" name="leaning" value="3.8" min="0" max="30" step="any">
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="sg-lopsided">Asymmetric Crown</label>
+          <div class="slider-field">
+            <input type="range" id="sg-lopsided-range" min="0" max="30" step="0.1" value="3.2">
+            <input type="number" id="sg-lopsided" name="lopsided" value="3.2" min="0" max="30" step="any">
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="sg-firescar">Fire Scar</label>
+          <div class="slider-field">
+            <input type="range" id="sg-firescar-range" min="0" max="30" step="0.1" value="1.8">
+            <input type="number" id="sg-firescar" name="firescar" value="1.8" min="0" max="30" step="any">
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="sg-canker">Canker</label>
+          <div class="slider-field">
+            <input type="range" id="sg-canker-range" min="0" max="30" step="0.1" value="1.2">
+            <input type="number" id="sg-canker" name="canker" value="1.2" min="0" max="30" step="any">
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="sg-chlorosis">Chlorosis</label>
+          <div class="slider-field">
+            <input type="range" id="sg-chlorosis-range" min="0" max="30" step="0.1" value="0.2">
+            <input type="number" id="sg-chlorosis" name="chlorosis" value="0.2" min="0" max="30" step="any">
+          </div>
+        </div>
+      </div>
+      <p class="note" style="margin-top:12px;">A tree marked as a snag is recorded as dead, with every other defect flag forced off — a snag isn't also lopsided or fire-scarred, it's just dead.</p>
+    </details>
+
+    <div class="hero__actions" style="margin-top:8px;">
+      <button type="submit" class="btn btn--primary">Generate</button>
+      <button type="button" id="sg-download-btn" class="btn btn--cyan" disabled>Download CSV</button>
+    </div>
+    <p id="sg-status" class="note" style="margin-top:16px;" aria-live="polite"></p>
+
+    <!-- TODO: confirm the exact folder name/path once verified against the
+         actual unzipped build (candidates from stand_generator.R suggest
+         something like Forestry/SavedData/Export, but that's unconfirmed —
+         don't publish this path without checking it against a real install). -->
+    <div style="margin-top:16px;">
+      <h3 style="font-size:1rem;">Loading Your Stand Into Pinecraft</h3>
+      <p>
+        Drag and drop the downloaded CSV into the <strong>[folder path TBD]</strong>
+        folder inside your Pinecraft install directory. Pinecraft only loads
+        the most recently added file from that folder, so drop in one stand
+        at a time.
+      </p>
+    </div>
+  </form>
+
+  <div id="sg-results" class="stand-results" style="max-width:640px;">
+    <table class="specs">
+      <tr><th>Size</th><td id="sg-summary-size"></td></tr>
+      <tr><th>Number of Trees</th><td id="sg-summary-count"></td></tr>
+      <tr><th>Density</th><td id="sg-summary-density"></td></tr>
+      <tr><th>QMD</th><td id="sg-summary-qmd"></td></tr>
+      <tr><th>Basal Area</th><td id="sg-summary-ba"></td></tr>
+      <tr><th>Seed</th><td id="sg-summary-seed"></td></tr>
+    </table>
+
+    <div class="stand-preview-legend">
+      <span><i class="legend-swatch" style="background:rgba(127,194,92,0.85);"></i>Healthy</span>
+      <span><i class="legend-swatch legend-swatch--firescar"></i>Fire Scar</span>
+      <span><i class="legend-swatch legend-swatch--ring"></i>Other defect</span>
+      <span><i class="legend-swatch" style="background:#000000;"></i>Snag (dead)</span>
+    </div>
+
+    <div id="sg-preview" class="stand-preview">
+      <canvas id="sg-preview-canvas"></canvas>
+      <div id="sg-preview-tooltip" class="stand-preview-tooltip"></div>
+    </div>
+
+    <div class="stand-histogram">
+      <h4>Diameter Distribution</h4>
+      <canvas id="sg-histogram-canvas"></canvas>
+      <div id="sg-histogram-tooltip" class="stand-preview-tooltip stand-preview-tooltip--dark"></div>
     </div>
   </div>
 </section>
@@ -49,5 +202,6 @@
 <div data-include="partials/footer.html"></div>
 
 <script src="assets/js/main.js"></script>
+<script src="assets/js/stand-generator.js"></script>
 </body>
 </html>
