@@ -45,26 +45,19 @@ PHASE 1 — GET THE LANDING PAGE LIVE
 ===============================================================================
 Ordered by what actually blocks what — not just top-to-bottom.
 
---- 1a. START THESE FIRST (do in this order — each depends on the last) ---
-[ ] Create the GitHub repo (suggest name: pinecraftvr, or pinecraftvr.org)
-[ ] git init, first commit, push to GitHub
-[ ] At your domain registrar, point pinecraftvr.org's DNS at GitHub Pages —
-    do this as early as possible, even before the next steps: DNS changes
-    can take hours to propagate, so it should be running in the background
-    while you do everything else, not something you wait to start.
-      A records (apex domain) -> 185.199.108.153
-                                  185.199.109.153
-                                  185.199.110.153
-                                  185.199.111.153
-      (optional) www CNAME -> <yourusername>.github.io
-    Ask me for help with this when you get here — the exact steps depend on
-    your registrar.
-[ ] In repo Settings > Pages: set source to the main branch, custom domain
-    pinecraftvr.org (this reads the CNAME file already in the repo)
-[ ] Confirm HTTPS is enabled once DNS propagates (GitHub Pages setting) —
-    this is the last step; nothing else waits on it
+--- 1a. DONE ---
+[x] Create the GitHub repo -> https://github.com/jbcannon/pinecraftvr.org
+    (website repo; separate "pinecraftvr" repo reserved for the Unreal
+    open-source project, once those files are shared)
+[x] git init, first commit, push to GitHub
+[x] GitHub Pages enabled, source = master branch root.
+[x] Previewing for now at https://jbcannon.github.io/pinecraftvr.org/ —
+    decided to fill in real content first and deal with the domain/DNS
+    later (see 1c below). CNAME file was removed and custom domain
+    unset for the moment so this URL renders directly instead of
+    redirecting to the not-yet-working pinecraftvr.org.
 
---- 1b. MAKE DOWNLOAD ACTUALLY WORK (needs the repo from 1a, not DNS) ---
+--- 1b. FILL IN THE PLACEHOLDERS (any order) ---
 [ ] Create first GitHub Release (even a "v0.1-preview" tag is fine):
       - attach the Windows .zip/executable as a Release asset
       - attach media-source/pinecraftvr-demo.mp4 as a Release asset
@@ -72,15 +65,10 @@ Ordered by what actually blocks what — not just top-to-bottom.
 [ ] Update index.html: Video section -> swap <p class="video-placeholder">
     for the real <video> tag pointed at the Release asset URL (snippet is
     already commented in index.html)
-
---- 1c. QUICK CONTENT FIXES (no blockers — do these anytime, e.g. while
-         waiting on DNS to propagate) ---
 [ ] Confirm/replace the placeholder System Requirements table on
     download.html with real specs
 [ ] Read through the "mixed-age forests" blurb on the landing page — decide
     if it should stay this brief or say more
-
---- 1d. POLISH (nice-to-have, not launch-blocking) ---
 [ ] Real logo files -> assets/img/logos/ (swap into partials/footer.html,
     replacing the dashed placeholder boxes):
       - Jones Center at Ichauway
@@ -90,6 +78,22 @@ Ordered by what actually blocks what — not just top-to-bottom.
 [ ] Favicon -> assets/img/favicon.png
 [ ] Optional: short (5-15s), silent, lightweight loop clip -> assets/video/
     hero-loop.mp4, for the hero background video (structure's already there)
+
+--- 1c. DOMAIN / DNS (once 1b above is done) ---
+[ ] Re-add the CNAME file (contents: pinecraftvr.org) and commit/push it
+[ ] At your domain registrar, point pinecraftvr.org's DNS at GitHub Pages —
+    do this as early in this step as you can, since DNS changes take a
+    while (up to ~48h, often much faster) to propagate.
+      A records (apex domain) -> 185.199.108.153
+                                  185.199.109.153
+                                  185.199.110.153
+                                  185.199.111.153
+      (optional) www CNAME -> jbcannon.github.io
+    Ask me for help with this when you get here — the exact steps depend on
+    your registrar.
+[ ] Once DNS is confirmed pointed correctly, set the custom domain back in
+    GitHub repo Settings > Pages (or ask me — it's one API call)
+[ ] Confirm HTTPS is enabled once DNS propagates (GitHub Pages setting)
 
 ===============================================================================
 PHASE 2 — OPEN SOURCE UNREAL PROJECT
