@@ -124,10 +124,15 @@ for Contact.
     the pause-menu key (P, not Esc), and the custom-map folder/behavior
     (SavedData/Local, loads first file alphabetically — not
     SavedData/Download, not "most recent," as earlier text had said).
-    Two facts still marked [TBD] in the copy: unzipped install size, and
-    the required NVIDIA driver version — not in that PDF either.
-[ ] About (about.html) — Stoddard-Neel method, ecological forestry,
-    philosophy behind Pinecraft
+    Unzipped install size confirmed: 885 MB. Required NVIDIA driver version
+    still marked [TBD] in both tutorial.html and download.html's System
+    Requirements table — not in that PDF either.
+[x] About (about.html) — Stoddard-Neel approach, why Pinecraft was built, a
+    Partners section (Jones Center, Devhouse Games, USDA NRCS), and a Team
+    section. Jeffery Cannon's card is filled in; the other two team cards
+    are still [Name]/[Role]/[bio] placeholders waiting on names + bios.
+    Headshots (including Cannon's) still TBD — placeholder circle avatars
+    for now.
 [x] Contact (contact.html) — contact info, link to the Landscape Ecology
     Lab, and a contact form (mailto-based for now, see backlog)
 [ ] Link to the Forestry article about Pinecraft (decide where it goes —
