@@ -69,3 +69,13 @@ document.querySelectorAll('.video-click-overlay').forEach(function (overlay) {
   video.addEventListener('play', function () { frame.classList.add('is-playing'); });
   video.addEventListener('pause', function () { frame.classList.remove('is-playing'); });
 });
+
+// Opens a <details> (e.g. a Getting Started guide section) when the URL
+// hash points at it — browsers vary on doing this automatically, so this
+// guarantees a link like tutorial.html#vr-setup actually reveals it.
+if (location.hash) {
+  var target = document.getElementById(location.hash.slice(1));
+  if (target && target.tagName === 'DETAILS') {
+    target.open = true;
+  }
+}

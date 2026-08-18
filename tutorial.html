@@ -13,7 +13,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Getting Started · Pinecraft</title>
-<meta name="description" content="Install Pinecraft and learn how to play — setup instructions and a gameplay walkthrough.">
+<meta name="description" content="Install Pinecraft and learn how to play — download, PC and VR setup, controls, sessions, loading custom maps, and troubleshooting.">
 <link rel="icon" href="assets/img/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,19 +30,159 @@
   <p class="lede">Install Pinecraft and learn how to play — setup instructions and a gameplay walkthrough, in one place.</p>
 </section>
 
-<section class="wrap coming-soon-panel">
-  <div class="coming-soon-badge">Coming Soon</div>
+<section class="wrap section">
 
-  <div class="grid grid--2" style="margin-top: 12px;">
-    <div>
-      <h3><img class="heading-icon" src="assets/img/logos/pine-mark.png" alt="">Installation & Setup</h3>
-      <p>Step-by-step instructions for downloading, installing, and launching Pinecraft on PC or in VR.</p>
+  <details class="guide-section" id="download-install" open>
+    <summary>Download & Installation</summary>
+    <div class="guide-section__body">
+      <h3>1. Download</h3>
+      <p>Grab the latest build from the <a class="text-link" href="download.html">Download page</a>. Pinecraft runs on PC or in PC-VR — VR requires a Meta Quest 3 headset.</p>
+
+      <h3>2. Unzip — there's no installer</h3>
+      <p>Unzip the download anywhere on your computer and you're ready to go. Unzipped, it takes up about <strong>885 MB</strong>.</p>
+
+      <figure class="guide-screenshot">
+        <img src="assets/img/screenshots/forestry-exe-folder.jpg" alt="The unzipped Pinecraft folder, with Forestry.exe visible.">
+        <figcaption>The unzipped root folder, with Forestry.exe visible – double-click to launch the game.</figcaption>
+      </figure>
+
+      <h3>3. Check system requirements</h3>
+      <p>Take a look at the <a class="text-link" href="download.html#system-requirements">System Requirements</a> on the Download page to make sure your PC can run it before diving in.</p>
     </div>
-    <div>
-      <h3><img class="heading-icon" src="assets/img/logos/pine-mark.png" alt="">Gameplay Tutorial</h3>
-      <p>A walkthrough of loading a stand, moving around, marking trees, switching views, and exporting a session.</p>
+  </details>
+
+  <details class="guide-section" id="pc-setup">
+    <summary>Setting Up: PC</summary>
+    <div class="guide-section__body">
+      <p>There's not much setup here — just double-click <code>Forestry.exe</code> in the folder you unzipped, and you're in. Here's what you need to know to get around once you are:</p>
+
+      <h3>Controls</h3>
+      <ul>
+        <li><strong>WASD</strong> — move</li>
+        <li><strong>Mouse</strong> — look around</li>
+        <li><strong>Left Shift</strong> — sprint</li>
+        <li><strong>Space</strong> — jump (though you won't really need it)</li>
+        <li><strong>Q</strong> — spray/mark/un-mark a tree. Aim at it and be within reach.</li>
+        <li><strong>E</strong> — inspect a tree, showing its height, diameter, and species (E again, or the Close button, to dismiss)</li>
+        <li><strong>R</strong> — open the overhead map (WASD pans it, mouse scroll wheel zooms)</li>
+        <li><strong>P</strong> — pause menu (P again, or the Close button, to dismiss)</li>
+      </ul>
+
+      <figure class="guide-screenshot">
+        <img src="assets/img/screenshots/pc-mark-tree.jpg" alt="Standing in front of a tree with the crosshair on it, right before marking it.">
+        <figcaption>Standing in front of a tree with the crosshair on it, right before marking it — shows the Q control in action.</figcaption>
+      </figure>
     </div>
-  </div>
+  </details>
+
+  <details class="guide-section" id="vr-setup">
+    <summary>Setting Up: VR</summary>
+    <div class="guide-section__body">
+      <p>VR requires a Meta Quest 3.</p>
+
+      <h3>Requirements</h3>
+      <ul>
+        <li>Meta Quest 3</li>
+        <li>An NVIDIA graphics card, driver version <strong>[driver version TBD]</strong> or later</li>
+        <li><a class="text-link" href="https://www.meta.com/quest/setup/" target="_blank" rel="noopener">Meta Horizon Link</a> installed on your PC</li>
+      </ul>
+
+      <h3>Setup</h3>
+      <ol>
+        <li>Install Meta Horizon Link on your PC.</li>
+        <li>Connect your Quest 3 to your PC with a USB-C cable.</li>
+        <li>When prompted on your headset, select the option to connect to your PC (usually shown as "Quest Link" or similar).</li>
+        <li>Use the controller trigger to launch Pinecraft from your PC's app list, inside the headset.</li>
+      </ol>
+
+      <div class="guide-placeholder">
+        <strong>Screenshot placeholder</strong>
+        The Quest Link connection prompt on your PC, right after plugging in the headset.
+      </div>
+
+      <h3>VR Controls</h3>
+      <ul>
+        <li><strong>Left joystick, forward</strong> — teleport move</li>
+        <li><strong>Left joystick, left/right</strong> — snap-turn 45°</li>
+        <li><strong>Left grip</strong> — bring up the tablet device</li>
+        <li><strong>Left X/Y buttons</strong> — zoom the overhead map in/out</li>
+        <li><strong>Left trigger</strong> (tablet up) — enable the pointer laser, which also lets you:
+          <ul>
+            <li><strong>Right A button</strong> — click/select on the tablet screen</li>
+            <li><strong>Right joystick</strong> — move the overhead map, while pointing at the tablet</li>
+            <li><strong>Right trigger</strong> — inspect a tree (point the laser at it; results show on the tablet)</li>
+          </ul>
+        </li>
+        <li><strong>Right grip</strong> — enable the spray can</li>
+        <li><strong>Right trigger</strong> (spray can enabled) — spray/mark/un-mark a tree</li>
+      </ul>
+
+      <div class="guide-placeholder">
+        <strong>Screenshot placeholder</strong>
+        The in-VR tablet, pulled up mid-session with the pointer laser active.
+      </div>
+    </div>
+  </details>
+
+  <details class="guide-section" id="menus-sessions">
+    <summary>Menus & Sessions</summary>
+    <div class="guide-section__body">
+      <h3>Main Menu</h3>
+      <ul>
+        <li><strong>Start Session</strong> — loads the default Pinecraft setting (longleaf pine from Ichauway). It downloads straight from Google Drive into <code>SavedData/Download</code> automatically the first time — you never need to place anything there yourself, and never delete that folder, since removing it breaks the download link. There's a brief delay while the data downloads, then a short "freeze" while the trees generate — that's expected, not a bug.</li>
+        <li><strong>Load Session</strong> — loads a custom session from <code>SavedData/Local</code> (see <a class="text-link" href="#loading-maps">Loading Custom Maps</a> below). This is usually faster than Start Session, since there's no download to wait on.</li>
+        <li><strong>Exit Session</strong> — asks you to confirm before quitting.</li>
+      </ul>
+
+      <h3>Pause Menu</h3>
+      <p>Open it with <strong>P</strong> on PC, or the hamburger icon on the VR tablet.</p>
+      <ul>
+        <li><strong>Hide/Show Marked Trees</strong> — toggles whether marked trees are visible. While they're hidden, marking and inspecting trees is disabled — that's intentional, tied to how Pinecraft generates thousands of trees efficiently.</li>
+        <li><strong>Export Session</strong> — writes your marked-tree data to <code>SavedData/Export/MarkingExport.csv</code>. This <strong>overwrites</strong> any existing file of that name, so rename or move it first if you want to keep more than one export.</li>
+        <li><strong>Back To Main Menu</strong> — only use this once you're done, or have already exported — starting a new session from the main menu removes the current forest.</li>
+        <li><strong>Anti-Aliasing</strong> (Off / FXAA / TAA / TSR) — higher settings look great on PC but can cause visual artifacts in VR, so pick whichever looks best on your setup.</li>
+      </ul>
+
+      <div class="guide-placeholder">
+        <strong>Screenshot placeholder</strong>
+        The pause menu, showing the toggle-marked-trees, export, and anti-aliasing options.
+      </div>
+    </div>
+  </details>
+
+  <details class="guide-section" id="loading-maps">
+    <summary>Loading Custom Maps</summary>
+    <div class="guide-section__body">
+      <ol>
+        <li>Clicking "Start Session" loads the built-in map by default — but you can also build your own.</li>
+        <li>Use our <a class="text-link" href="customize.html#stand-generator">Stand Generator</a> to create a natural (random) or planted (grid) map.</li>
+        <li>Download your map — it comes as a CSV file.</li>
+        <li>Place the CSV into the <code>SavedData/Local</code> folder inside your Pinecraft install directory.</li>
+        <li>Choose "Load Session" in-game. It loads the <strong>first CSV alphabetically</strong> in that folder, so keep just one stand in there at a time.</li>
+      </ol>
+
+      <div class="guide-placeholder">
+        <strong>Screenshot placeholder</strong>
+        The "Load Session" option on the main menu.
+      </div>
+    </div>
+  </details>
+
+  <details class="guide-section" id="tips">
+    <summary>Tips & Troubleshooting</summary>
+    <div class="guide-section__body">
+      <ul>
+        <li><strong>Ghosting/trailing behind moving objects in VR?</strong> That's the Quest 3's Auto-Frame Generation. Turn it off with <strong>Ctrl + Numpad 1</strong> while Pinecraft is open — it has to be the 1 on the numpad, not the number row.</li>
+        <li>You don't need to close Pinecraft to swap CSVs between folders — files are only read when you click Start Session or Load Session, so it's safe to do while the game is running.</li>
+        <li>The overhead map pans faster the further you're zoomed out — handy for covering a large stand quickly.</li>
+        <li>If a CSV is missing height, diameter, or "alive" data for a tree, that tree generates as dead.</li>
+        <li>A tree showing 0.0 m for height in the inspection window is a dead "snag" tree, shown as dead.</li>
+        <li>Grass-stage trees are visual only, not interactable.</li>
+        <li>Saplings are interactable, but tend to sit close together — sometimes almost overlapping — which can make them tricky to mark or inspect individually.</li>
+      </ul>
+    </div>
+  </details>
+
 </section>
 </main>
 

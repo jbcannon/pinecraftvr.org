@@ -28,7 +28,7 @@ PHASE 0 — SCAFFOLDING (done)
         (dual content, one nav link)
       - Added Download as a real page (not a stub) — the download button
         and system requirements live there, off of Home
-    Current top nav: Home, Download, Customize, Tutorial, About
+    Current top nav: Home, Gallery, Download, Customize, Getting Started, About
     Current footer links: GitHub (external), Contact
 [x] Demo video moved out of repo into media-source/ (gitignored — too big
     for git, ~122MB)
@@ -115,7 +115,17 @@ for Contact.
     download) plus a Source Code blurb pointing at the still-pending
     Open Source repo. The earlier "Your Forest" (species-mix
     customization) idea was dropped from this page.
-[ ] Tutorial (tutorial.html)
+[x] Getting Started (tutorial.html) — six collapsible sections (Download
+    & Installation, PC Setup, VR Setup, Menus & Sessions, Loading Custom
+    Maps, Tips & Troubleshooting), with screenshot placeholders + captions
+    left for real screenshots to be dropped in. Corrected against
+    "Desktop/Pinecraft Launch/Pinecraft Important Info.pdf" (Devhouse's
+    handoff doc) — fixed the exe name (Forestry.exe, not forest.exe),
+    the pause-menu key (P, not Esc), and the custom-map folder/behavior
+    (SavedData/Local, loads first file alphabetically — not
+    SavedData/Download, not "most recent," as earlier text had said).
+    Two facts still marked [TBD] in the copy: unzipped install size, and
+    the required NVIDIA driver version — not in that PDF either.
 [ ] About (about.html) — Stoddard-Neel method, ecological forestry,
     philosophy behind Pinecraft
 [x] Contact (contact.html) — contact info, link to the Landscape Ecology
@@ -136,9 +146,9 @@ BACKLOG / IDEAS (not yet scheduled)
     streaming
     will perform better for visitors on slow/mobile connections than a
     single fixed-quality file. Not urgent; current setup works fine for now.
-[ ] Confirm the real Export folder path for customize.html's "Loading
-    Your Stand Into Pinecraft" note — currently a "[folder path TBD]"
-    placeholder, unconfirmed against an actual unzipped build.
+[x] SavedData/Local (load custom maps) and SavedData/Export (marked-tree
+    export) folder paths confirmed against Devhouse's handoff PDF — see
+    note under Getting Started above.
 [ ] Set up a proper form backend for the Contact page (e.g. Formspree) so
     submissions actually land in an inbox. Currently the form builds a
     mailto: link and hands off to the visitor's own email client — works,
