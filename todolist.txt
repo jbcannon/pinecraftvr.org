@@ -128,3 +128,8 @@ BACKLOG / IDEAS (not yet scheduled)
 [ ] Screenshots gallery on landing page (beyond the demo video)
 [ ] Analytics (optional — decide if you want any visitor tracking)
 [ ] Basic support/FAQ page once you're ready to take on support questions
+[ ] Move demo video off GitHub (currently a Release asset under the
+    "media.01" tag) and onto YouTube (unlisted) or Vimeo — adaptive bitrate
+    streaming
+    will perform better for visitors on slow/mobile connections than a
+    single fixed-quality file. Not urgent; current setup works fine for now.
