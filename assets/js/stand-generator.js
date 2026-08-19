@@ -1,18 +1,18 @@
-// Client-side port of stand_generator.R — generates a synthetic longleaf
+// Client-side port of stand_generator.R. Generates a synthetic longleaf
 // pine stand (random or grid) and downloads it as a MarkingExport CSV,
 // entirely in the browser (no server, matches how the rest of this static
 // site works). Runs only on customize.html, where #stand-generator-form
 // exists.
 //
 // Unit note: the form can display metric or US units, but the CSV always
-// contains metric values (cm, meters) — same as the R script — since
+// contains metric values (cm, meters), same as the R script, since
 // that's what Pinecraft's importer expects. The units toggle only
 // converts what's shown on screen, both in the inputs and in the summary
 // message after generating.
 //
 // Seed note: R and JavaScript use completely different random number
 // generators, so the same seed will NOT produce an identical stand
-// between this tool and stand_generator.R — reproducibility only holds
+// between this tool and stand_generator.R. Reproducibility only holds
 // within each tool (same seed + same settings here always regenerates
 // the same stand here).
 (function () {
@@ -51,7 +51,7 @@
   });
 
   // If any setting changes after a preview, the last-generated CSV no
-  // longer matches what's on screen — disable Download until Preview is
+  // longer matches what's on screen. Disable Download until Preview is
   // clicked again, so it's never possible to download a stand that
   // doesn't match the visible preview/settings.
   ['input', 'change'].forEach(function (evt) {
@@ -59,7 +59,7 @@
       if (downloadBtn.disabled || !lastCSV) return;
       downloadBtn.disabled = true;
       statusEl.style.color = '';
-      statusEl.textContent = 'Settings changed — click Generate to update before downloading.';
+      statusEl.textContent = 'Settings changed. Click Generate to update before downloading.';
     });
   });
 
@@ -81,7 +81,7 @@
   var sdRange = document.getElementById('sg-sd-range');
 
   // Slider <-> number stay in sync either direction. Typing a value outside
-  // the slider's 10-250 range is still allowed in the number field — the
+  // the slider's 10-250 range is still allowed in the number field. The
   // slider handle just clamps to whichever end is closest.
   function linkSlider(rangeEl, numberEl) {
     rangeEl.addEventListener('input', function () {
@@ -126,8 +126,8 @@
     input.value = round2(converted);
   }
 
-  // Slider min/max are set from these fixed metric bounds every toggle —
-  // never derived from whatever the slider currently has — so repeated
+  // Slider min/max are set from these fixed metric bounds every toggle,
+  // never derived from whatever the slider currently has, so repeated
   // toggling back and forth can't drift the bounds.
   var METRIC_BOUNDS = {
     width: [10, 250], height: [10, 250],
@@ -139,7 +139,7 @@
   }
 
   // Live-convert the displayed numbers (and unit labels) when the toggle
-  // changes, so the real-world quantity stays the same — only the number
+  // changes, so the real-world quantity stays the same; only the number
   // and label change. Generation itself re-derives metric values from
   // whatever's on screen at submit time, using this same checkbox state.
   unitsRadios.forEach(function (radio) {
@@ -224,7 +224,7 @@
     });
   }
 
-  // A snag is recorded as dead with every other defect forced off — a
+  // A snag is recorded as dead with every other defect forced off. A
   // standing dead tree isn't also "lopsided" or "fire-scarred," it's just
   // dead. Snag status is checked first, per tree, before the rest.
   function buildDefects(n, params, rng) {
@@ -244,7 +244,7 @@
   function generateRandom(p, rng) {
     var areaHa = (p.widthM * p.heightM) / 10000;
     var n = Math.round(p.density * areaHa);
-    if (n < 1) throw new Error('Density too low — zero trees over this plot size.');
+    if (n < 1) throw new Error('Density too low: zero trees over this plot size.');
 
     var X = [], Y = [];
     for (var i = 0; i < n; i++) {
@@ -262,12 +262,12 @@
     var nx = Math.floor(p.widthM / spacing);
     var ny = Math.floor(p.heightM / spacing);
     if (nx < 1 || ny < 1) {
-      throw new Error('Density too low for this plot size — spacing between trees would exceed the plot dimensions.');
+      throw new Error('Density too low for this plot size: spacing between trees would exceed the plot dimensions.');
     }
     var xMargin = (p.widthM - (nx - 1) * spacing) / 2;
     var yMargin = (p.heightM - (ny - 1) * spacing) / 2;
 
-    // Real planting isn't laser-precise — a small jitter keeps the grid
+    // Real planting isn't laser-precise. A small jitter keeps the grid
     // from looking artificially perfect.
     var JITTER_M = 0.25;
     var X = [], Y = [];
@@ -345,9 +345,7 @@
 
       var isSnag = !d.Alive[i];
       var hasFireScar = !!d.FireScar[i];
-      // Fire scar is common enough to get its own symbol; everything else
-      // that isn't a snag or fire scar just flags a ring — too many
-      // distinct hues/symbols for defects that can co-occur gets noisy.
+      // Fire scar gets its own symbol; any other defect just flags a ring.
       var hasOtherDefect = !!(d.Lopsided[i] || d.Leaning[i] || d.Chlorosis[i] || d.Canker[i]);
       var defectLabels = [];
       if (d.Lopsided[i]) defectLabels.push('Asymmetric Crown');
@@ -377,8 +375,8 @@
 
       var ringR = r + 2;
       if (hasFireScar) {
-        // Fire scars read as char-black — plain black works directly now
-        // that the plot background is light (no halo needed).
+        // Fire scars read as char-black, so plain black works on the
+        // light plot background.
         ctx.beginPath();
         ctx.arc(px, py, ringR, 0, Math.PI * 2);
         ctx.strokeStyle = FIRESCAR_RING;
@@ -396,7 +394,7 @@
       }
     }
 
-    // Scale bar — a "nice" round distance roughly a fifth of the plot
+    // Scale bar: a "nice" round distance roughly a fifth of the plot
     // width, shown in whichever units the form currently displays. The
     // underlying plot/tree positions are always metric internally; only
     // this label (and which "nice" number reads well) changes with units.
@@ -460,7 +458,7 @@
     tooltipEl.classList.remove('is-visible');
   });
 
-  // Basal area (m²/ha) — the standard forestry stocking metric: sum of
+  // Basal area (m²/ha), the standard forestry stocking metric: sum of
   // each live tree's cross-sectional area at breast height, per hectare.
   // Snags are excluded, matching how stand basal area is normally reported.
   function basalAreaPerHa(result) {
@@ -481,7 +479,7 @@
 
   function drawHistogram(result, us) {
     // Bins are 2cm wide on the underlying metric DBH, snapped to clean
-    // 2cm breaks (not an arbitrary continuous width) — same breaks
+    // 2cm breaks (not an arbitrary continuous width), same breaks
     // regardless of which units are currently displayed.
     var BIN_WIDTH_CM = 2;
     var minCm = Math.floor(Math.min.apply(null, result.DBH) / BIN_WIDTH_CM) * BIN_WIDTH_CM;

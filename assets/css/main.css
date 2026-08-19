@@ -1,15 +1,15 @@
 /* ==========================================================================
-   Pinecraft — theme variables
+   Pinecraft: theme variables
    Pulled from the in-game pause menu (panel/button/header greens + mauve)
-   and the tree-selection cyan seen in gameplay. All in one place on purpose
-   — nudge any hex below and the whole site follows.
+   and the tree-selection cyan seen in gameplay, centralized here so a hex
+   change updates the whole site.
    ========================================================================== */
 :root {
   /* Core game palette */
   --forest-dark:   #2f3b26; /* pause-menu panel background */
   --forest-mid:    #5a6f3d; /* pause-menu button rows */
   --forest-mauve:  #8a6a5c; /* pause-menu header bar */
-  --accent-cyan:   #3fe0e8; /* tree-selection highlight — the one "special" color */
+  --accent-cyan:   #3fe0e8; /* tree-selection highlight, the one "special" color */
   --accent-lime:   #d6e24b; /* pause-menu button text */
 
   /* Supporting neutrals, pulled from the gameplay shot */
@@ -17,7 +17,7 @@
   --sand:          #b99b5c;
   --sky:           #aebfc9;
 
-  /* Content surface colors — dark chrome, light reading surface */
+  /* Content surface colors: dark chrome, light reading surface */
   --cream:         #f7f5ee;
   --cream-dim:     #eee9db;
   --ink:           #22281c;
@@ -72,7 +72,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 /* ==========================================================================
-   Buttons — styled after the pause-menu rows (moss green + lime text)
+   Buttons: styled after the pause-menu rows (moss green + lime text)
    ========================================================================== */
 .btn {
   display: inline-flex;
@@ -109,7 +109,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   border: 2px solid var(--forest-dark);
 }
 .btn--ghost:hover { background: var(--forest-dark); color: var(--cream); }
-/* For ghost buttons sitting on the dark hero — plain .btn--ghost (dark
+/* For ghost buttons sitting on the dark hero: plain .btn--ghost (dark
    text/border) nearly disappears against the hero's dark green overlay. */
 .btn--ghost-inverse {
   background: transparent;
@@ -253,12 +253,12 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   position: absolute;
   inset: 0;
   z-index: 1;
-  /* Same gradient the hero used before video — keeps it looking right even
+  /* Same gradient the hero used before video. Keeps it looking right even
      with no video file yet, and keeps hero text readable over any footage. */
   background: linear-gradient(180deg, rgba(47,59,38,0.88) 0%, rgba(36,48,29,0.92) 100%);
 }
 @media (max-width: 700px) {
-  /* Skip the video on small screens — saves mobile data, and the plain
+  /* Skip the video on small screens to save mobile data. The plain
      gradient (still shown via .hero__overlay) looks fine on its own. */
   .hero__bg-video { display: none; }
 }
@@ -340,8 +340,8 @@ section.section--alt {
 }
 /* Covers everything except the native control bar strip at the bottom,
    so a click anywhere on the video toggles play/pause without ever
-   fighting the browser's own controls (seek bar, volume, fullscreen) —
-   clicks on that strip fall straight through to the video underneath. */
+   fighting the browser's own controls (seek bar, volume, fullscreen).
+   Clicks on that strip fall straight through to the video underneath. */
 .video-click-overlay {
   position: absolute;
   top: 0;
@@ -418,9 +418,7 @@ section.section--alt {
   align-items: center;
   gap: 8px;
 }
-/* "Coming soon" cards get a corner ribbon instead of the header-badge
-   treatment other cards would get — kept deliberately different from a
-   plain striped background, which read as a generic placeholder pattern. */
+/* "Coming soon" cards get a corner ribbon via ::before. */
 .card--soon {
   position: relative;
   overflow: hidden;
@@ -463,9 +461,7 @@ section.section--alt {
   text-shadow: 0 0 22px rgba(63,224,232,1);
   transition: transform 0.18s ease, text-shadow 0.18s ease;
 }
-/* Coming-soon cards stay hands-off — no breathing dot, no hover pop, no
-   glow, no card lift — so they visibly read as "not yet interactive" next
-   to the live features around them. */
+/* Coming-soon cards get no breathing dot, hover pop, glow, or card lift. */
 .card--soon .tag-mark {
   color: var(--forest-mauve);
   animation: none;
@@ -615,7 +611,7 @@ table.specs th {
 }
 
 /* ==========================================================================
-   Getting Started — collapsible guide sections
+   Getting Started: collapsible guide sections
    ========================================================================== */
 .guide-section {
   background: var(--white);
@@ -830,7 +826,7 @@ table.specs th {
 }
 
 /* ==========================================================================
-   About page — partners + team
+   About page: partners + team
    ========================================================================== */
 .about-photo {
   margin: 32px 0;

@@ -1,5 +1,5 @@
 PINECRAFTVR.ORG — TODO LIST
-Last updated: 2026-08-17
+Last updated: 2026-08-18
 
 HOW TO USE THIS FILE
   Pick up wherever the unchecked boxes start. Phase 1 = the bare-bones
@@ -114,7 +114,11 @@ for Contact.
     Generator (settings, live preview with defect visualization, CSV
     download) plus a Source Code blurb pointing at the still-pending
     Open Source repo. The earlier "Your Forest" (species-mix
-    customization) idea was dropped from this page.
+    customization) idea was dropped from this page. Also added a callout
+    box + downloadable R template (assets/downloads/pinecraft_stand_
+    generator.R) for people who'd rather code their own stands — same
+    math/defaults as the JS tool, plus ggplot2 stem-map and diameter-
+    distribution plots.
 [x] Getting Started (tutorial.html) — six collapsible sections (Download
     & Installation, PC Setup, VR Setup, Menus & Sessions, Loading Custom
     Maps, Tips & Troubleshooting), with screenshot placeholders + captions
@@ -127,12 +131,16 @@ for Contact.
     Unzipped install size confirmed: 885 MB. Required NVIDIA driver version
     still marked [TBD] in both tutorial.html and download.html's System
     Requirements table — not in that PDF either.
-[x] About (about.html) — Stoddard-Neel approach, why Pinecraft was built, a
-    Partners section (Jones Center, Devhouse Games, USDA NRCS), and a Team
-    section. Jeffery Cannon's card is filled in; the other two team cards
-    are still [Name]/[Role]/[bio] placeholders waiting on names + bios.
-    Headshots (including Cannon's) still TBD — placeholder circle avatars
-    for now.
+[x] About (about.html) — reframed around Ecological Forestry broadly (using
+    Jeff's own paper phrasing), with the Stoddard-Neel approach presented
+    as one documented example rather than the whole story. Jump-links pill
+    nav at the top (Ecological Forestry / Partners / The Team) so the
+    lower sections don't get buried under the long first section. Partner
+    cards (Jones Center, Devhouse Games, USDA NRCS) are dark-background
+    cards with the whole card clickable through to each org's site. Team
+    section has all 5 members with real titles — Cannon, Rutledge,
+    Puhlick, and McGuire have real headshots in; Kevin McIntyre is still
+    a "KM" placeholder circle, waiting on his photo.
 [x] Contact (contact.html) — contact info, link to the Landscape Ecology
     Lab, and a contact form (mailto-based for now, see backlog)
 [ ] Link to the Forestry article about Pinecraft (decide where it goes —

@@ -1,7 +1,7 @@
 # pinecraft_stand_generator.R
 #
-# R template for generating synthetic longleaf pine stands for Pinecraft —
-# mirrors the web-based Stand Generator at pinecraftvr.org/customize.html
+# R template for generating synthetic longleaf pine stands for Pinecraft.
+# Mirrors the web-based Stand Generator at pinecraftvr.org/customize.html
 # (same DBH/height/defect math, same CSV format), plus adds ggplot2 stem
 # map and diameter distribution plots.
 #
@@ -9,8 +9,8 @@
 #
 # Two generator functions, sharing the same arguments:
 #
-#   generate_stem_map()       — random (complete spatial randomness)
-#   generate_stem_map_grid()  — regular planted grid, with a small amount
+#   generate_stem_map()       - random (complete spatial randomness)
+#   generate_stem_map_grid()  - regular planted grid, with a small amount
 #                                of jitter so it doesn't look artificially
 #                                perfect
 #
@@ -21,14 +21,14 @@
 #   sd_dbh        - Standard deviation of DBH, cm (spread of the distribution)
 #   p_lopsided, p_leaning, p_chlorosis, p_firescar, p_canker, p_snag
 #                 - Per-tree defect probabilities, 0-1. A snag is recorded
-#                   as dead with every other defect forced off — a snag
+#                   as dead with every other defect forced off. A snag
 #                   isn't also lopsided or fire-scarred, it's just dead.
 #   seed          - Optional integer for reproducibible output
 #   output_file   - Optional output path; auto-named MarkingExport-YYYYMMDD*.csv
 #
 # Note on reproducibility: R and JavaScript use different random number
 # generators, so the same seed will NOT produce an identical stand between
-# this script and the website's Stand Generator — reproducibility only
+# this script and the website's Stand Generator. Reproducibility only
 # holds within each tool.
 
 
@@ -104,7 +104,7 @@
   invisible(output_file)
 }
 
-# Bundles everything a caller needs — the CSV-ready data.frame, the raw
+# Bundles everything a caller needs: the CSV-ready data.frame, the raw
 # vectors for plotting, and the plot dimensions.
 .make_result <- function(X, Y, DBH, Height, defects, width, height) {
   list(
@@ -133,7 +133,7 @@ generate_stem_map <- function(width,
 
   area_ha <- (width * height) / 10000
   n       <- round(density * area_ha)
-  if (n < 1) stop("Density too low — zero trees for this plot size.")
+  if (n < 1) stop("Density too low: zero trees for this plot size.")
 
   message(sprintf("Plot: %.2f x %.2f m (%.4f ha) | Trees: %d",
                   width, height, area_ha, n))
@@ -181,7 +181,7 @@ generate_stem_map_grid <- function(width,
   nx <- floor(width / spacing)
   ny <- floor(height / spacing)
   if (nx < 1 || ny < 1) {
-    stop("Density too low for this plot size — spacing between trees would exceed the plot dimensions.")
+    stop("Density too low for this plot size: spacing between trees would exceed the plot dimensions.")
   }
 
   x_margin <- (width - (nx - 1) * spacing) / 2
@@ -202,7 +202,7 @@ generate_stem_map_grid <- function(width,
 
   if (!is.null(seed)) set.seed(seed)
 
-  # Real planting isn't laser-precise — a small jitter keeps the grid from
+  # Real planting isn't laser-precise. A small jitter keeps the grid from
   # looking artificially perfect (matches the web tool's behavior).
   X <- grid$X + runif(n, -jitter, jitter)
   Y <- grid$Y + runif(n, -jitter, jitter)
@@ -224,7 +224,7 @@ generate_stem_map_grid <- function(width,
 
 # ── Plots ───────────────────────────────────────────────────────────────────
 
-# Stem map — dots positioned like the real stand, sized by DBH, colored by
+# Stem map: dots positioned like the real stand, sized by DBH, colored by
 # defect status. Matches the web tool's preview: green = healthy, black =
 # fire scar, amber = another defect (asymmetric crown/leaning/chlorosis/
 # canker), and snags are plotted as solid black regardless of size.
@@ -256,7 +256,7 @@ plot_stem_map <- function(result) {
     ggplot2::theme_minimal()
 }
 
-# Diameter distribution — 2cm bins, matching the web tool's histogram.
+# Diameter distribution: 2cm bins, matching the web tool's histogram.
 plot_diameter_distribution <- function(result) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop('This needs the ggplot2 package: install.packages("ggplot2")')

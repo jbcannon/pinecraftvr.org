@@ -1,7 +1,7 @@
 // Loads shared HTML partials into any element with a data-include
 // attribute, e.g. <div data-include="/partials/header.html"></div>
 // Edit the files in /partials/ and every page picks up the change
-// automatically — no copy-pasting into each page required.
+// automatically, no copy-pasting into each page required.
 document.querySelectorAll('[data-include]').forEach(function (el) {
   fetch(el.getAttribute('data-include'))
     .then(function (res) { return res.text(); })
@@ -9,7 +9,7 @@ document.querySelectorAll('[data-include]').forEach(function (el) {
     .catch(function (err) { console.error('Failed to load partial:', err); });
 });
 
-// Nav toggle — delegated on document since the header (and the button
+// Nav toggle: delegated on document since the header (and the button
 // inside it) loads in asynchronously above.
 document.addEventListener('click', function (e) {
   var toggle = e.target.closest('.nav-toggle');
@@ -21,7 +21,7 @@ document.addEventListener('click', function (e) {
 });
 
 // Contact form has no server behind it (static site, no backend to send
-// from) — submitting builds a mailto: link from the fields and hands off
+// from). Submitting builds a mailto: link from the fields and hands off
 // to the visitor's own email client, which sends it from their address.
 var contactForm = document.getElementById('contact-form');
 if (contactForm) {
@@ -48,7 +48,7 @@ if (contactForm) {
   });
 }
 
-// .video-click-overlay sits over the video (see main.css — it stops short
+// .video-click-overlay sits over the video (see main.css, it stops short
 // of the native control bar strip), so a click anywhere on it toggles
 // play/pause without ever competing with the browser's own controls.
 document.querySelectorAll('.video-click-overlay').forEach(function (overlay) {
@@ -71,7 +71,7 @@ document.querySelectorAll('.video-click-overlay').forEach(function (overlay) {
 });
 
 // Opens a <details> (e.g. a Getting Started guide section) when the URL
-// hash points at it — browsers vary on doing this automatically, so this
+// hash points at it. Browsers vary on doing this automatically, so this
 // guarantees a link like tutorial.html#vr-setup actually reveals it.
 if (location.hash) {
   var target = document.getElementById(location.hash.slice(1));
