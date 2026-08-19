@@ -3,7 +3,7 @@
 // Edit the files in /partials/ and every page picks up the change
 // automatically, no copy-pasting into each page required.
 document.querySelectorAll('[data-include]').forEach(function (el) {
-  fetch(el.getAttribute('data-include'))
+  fetch(el.getAttribute('data-include'), { cache: 'no-store' })
     .then(function (res) { return res.text(); })
     .then(function (html) { el.outerHTML = html; })
     .catch(function (err) { console.error('Failed to load partial:', err); });

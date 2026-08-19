@@ -1,10 +1,24 @@
 PINECRAFTVR.ORG — TODO LIST
-Last updated: 2026-08-18
+Last updated: 2026-08-19
 
 HOW TO USE THIS FILE
   Pick up wherever the unchecked boxes start. Phase 1 = the bare-bones
   landing page. Later phases = the "Coming Soon" pages, filled in one at a
   time whenever that piece is ready. Check items off as [x] when done.
+
+*** REMOVE BEFORE PUBLIC LAUNCH ***
+[ ] Pre-launch site gate: tried a client-side JS password gate on
+    2026-08-19, pulled it back out same day (unreliable, and a DNS-level
+    option turned out to be available instead). Set up DNS-based
+    protection (e.g. Cloudflare Access) in front of pinecraftvr.org while
+    the team reviews. Once that's live, or once the team's signed off and
+    the site's ready to go fully public: turn that off, and remove the
+    <meta name="robots" content="noindex, nofollow"> line from all 7
+    pages' <head> (index, about, contact, customize, download, gallery,
+    tutorial), added 2026-08-19 alongside the gate attempt.
+[ ] "Under Construction" banner (yellow/black stripes, top of every page
+    via partials/header.html) should also come down once the team's
+    signed off and this goes fully public.
 
 ===============================================================================
 PHASE 0 — SCAFFOLDING (done)
@@ -141,6 +155,14 @@ for Contact.
     section has all 5 members with real titles — Cannon, Rutledge,
     Puhlick, and McGuire have real headshots in; Kevin McIntyre is still
     a "KM" placeholder circle, waiting on his photo.
+[ ] Get feedback on the About page's ecological forestry language from
+    colleagues before treating it as final. Jeff's paper phrasing was
+    pulled in fairly directly; worth a second set of eyes on accuracy and
+    tone before this is public-facing.
+[x] Add a link to the Stoddard-Neel outreach publication on the About
+    page (Ecological Forestry section) -> jonesctr.org/the-stoddard-neel-
+    approach-to-ecological-forestry/, linked inline at the end of the
+    Stoddard-Neel paragraph.
 [x] Contact (contact.html) — contact info, link to the Landscape Ecology
     Lab, and a contact form (mailto-based for now, see backlog)
 [ ] Link to the Forestry article about Pinecraft (decide where it goes —
@@ -155,10 +177,19 @@ BACKLOG / IDEAS (not yet scheduled)
 [x] Analytics — Google Analytics (gtag.js) added to every page
 [ ] Basic support/FAQ page once you're ready to take on support questions
 [ ] Move demo video off GitHub (currently a Release asset under the
-    "media.01" tag) and onto YouTube (unlisted) or Vimeo — adaptive bitrate
-    streaming
-    will perform better for visitors on slow/mobile connections than a
-    single fixed-quality file. Not urgent; current setup works fine for now.
+    "media.01" tag) and onto YouTube for faster loading, adaptive bitrate
+    streaming will perform better for visitors on slow/mobile connections
+    than a single fixed-quality file.
+[ ] Add tooltips/callouts to the demo video on index.html explaining what's
+    happening on screen as gameplay unfolds (marking, inspecting, the
+    overhead map, etc.), so first-time visitors don't have to guess what
+    they're watching.
+[ ] Stand Generator stem-map preview (customize.html): the hover tooltip on
+    the canvas always shows DBH/height in metric (cm/m), even when the
+    units toggle is set to US. Should read whichever unit the form is
+    currently displaying, same as the rest of the tool. Likely fix in
+    assets/js/stand-generator.js's canvas mousemove handler, near where
+    the tooltip label string gets built.
 [x] SavedData/Local (load custom maps) and SavedData/Export (marked-tree
     export) folder paths confirmed against Devhouse's handoff PDF — see
     note under Getting Started above.

@@ -14,6 +14,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Download · Pinecraft</title>
 <meta name="description" content="Download Pinecraft and check system requirements.">
+<meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="assets/img/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,25 +32,36 @@
 </section>
 
 <section class="wrap section">
-  <a class="btn btn--primary" href="https://github.com/jbcannon/pinecraftvr.org/releases/latest/download/pinecraftvr-windows.zip">Download Pinecraft (Windows)</a>
-  <p class="note" style="margin-top:16px;">
-    Downloads as a .zip containing the executable. No installer yet.
-  </p>
+  <div class="grid grid--2" style="max-width:640px;">
+    <div>
+      <a class="btn btn--primary" href="https://github.com/jbcannon/pinecraftvr.org/releases/latest/download/pinecraftvr-windows.zip">Download Pinecraft (Windows)</a>
+      <p class="note" style="margin-top:12px;">
+        Downloads as a .zip containing the executable. No installer yet.
+      </p>
+    </div>
+    <div>
+      <a class="btn btn--ghost" href="#">Pinecraft Source (Unreal Engine) <span class="badge">Soon</span></a>
+      <p class="note" style="margin-top:12px;">
+        The uncompiled Unreal Engine project, for adapting Pinecraft to your own forest.
+      </p>
+    </div>
+  </div>
 </section>
 
 <section class="section section--alt">
   <div class="wrap">
   <div class="section__heading">
     <h2 id="system-requirements"><img class="heading-icon" src="assets/img/logos/pine-mark.png" alt="">System Requirements</h2>
-    <p class="note">Placeholder: confirm these against what you've actually tested on.</p>
+    <p class="note">Placeholder: Replace with input from Devhouse.</p>
   </div>
   <table class="specs">
-    <tr><th>OS</th><td>Windows 10/11 (64-bit)</td></tr>
-    <tr><th>VR Headset</th><td>Meta Quest 3 (via Link), optional, PC-VR only, other headsets not yet supported</td></tr>
-    <tr><th>GPU</th><td>VR-ready graphics card (e.g. GTX 1660 or better), TBD</td></tr>
-    <tr><th>Graphics Driver (VR)</th><td>NVIDIA, driver version [driver version TBD] or later</td></tr>
-    <tr><th>RAM</th><td>8 GB minimum, TBD</td></tr>
-    <tr><th>Storage</th><td>TBD</td></tr>
+    <tr><th></th><th>PC</th><th>PC-VR</th></tr>
+    <tr><th>OS</th><td>Windows 10/11 (64-bit)</td><td>Windows 11 (64-bit)</td></tr>
+    <tr><th>GPU</th><td>TBD</td><td>VR-ready graphics card (integrated or discrete), TBD</td></tr>
+    <tr><th>Graphics Driver</th><td>N/A</td><td>TBD, depends on GPU (integrated vs. discrete)</td></tr>
+    <tr><th>RAM</th><td>8 GB minimum, TBD</td><td>8 GB minimum, TBD</td></tr>
+    <tr><th>Storage</th><td>TBD</td><td>TBD</td></tr>
+    <tr><th>VR Headset</th><td>N/A</td><td>Meta Quest 3 (via Link), other headsets not yet supported</td></tr>
   </table>
   <p class="note" style="margin-top:16px;">
     Support isn't available yet for Pinecraft; it's early. Bug reports and
