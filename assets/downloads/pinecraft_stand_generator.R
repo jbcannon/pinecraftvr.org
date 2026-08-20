@@ -16,15 +16,20 @@
 #
 # Shared arguments:
 #   width, height - Plot dimensions, meters
-#   density       - Target stand density (trees per hectare)
+#   density       - Stand density, trees per hectare
 #   qmd           - Quadratic mean diameter, cm (center of the DBH distribution)
+#   ba            - Basal area, m^2/ha
+#                 - density, qmd, and ba are mathematically linked
+#                   (ba = density * qmd^2 * pi / 40000), since qmd is defined
+#                   as the diameter of the tree of average basal area.
+#                   Provide any two; the third is calculated automatically.
 #   sd_dbh        - Standard deviation of DBH, cm (spread of the distribution)
 #   p_lopsided, p_leaning, p_chlorosis, p_firescar, p_canker, p_snag
 #                 - Per-tree defect probabilities, 0-1. A snag is recorded
 #                   as dead with every other defect forced off. A snag
 #                   isn't also lopsided or fire-scarred, it's just dead.
 #   seed          - Optional integer for reproducibible output
-#   output_file   - Optional output path; auto-named MarkingExport-YYYYMMDD*.csv
+#   output_file   - Optional output path; auto-named CustomMap_YYYYMMDD*.csv
 #
 # Note on reproducibility: R and JavaScript use different random number
 # generators, so the same seed will NOT produce an identical stand between
@@ -33,6 +38,39 @@
 
 
 # ── Shared helpers ─────────────────────────────────────────────────────────────
+
+# Density, QMD, and Basal Area are mathematically linked (ba = density *
+# qmd^2 * pi / 40000), since QMD is defined as the diameter of the tree of
+# average basal area. Provide any two; this fills in the third. If all
+# three are given, density and qmd are used as authoritative, and a warning
+# is issued if the supplied ba doesn't match what they imply.
+.solve_density_qmd_ba <- function(density, qmd, ba) {
+  provided <- c(density = !is.null(density), qmd = !is.null(qmd), ba = !is.null(ba))
+  if (sum(provided) < 2) {
+    stop("Provide at least two of: density, qmd, ba.")
+  }
+  if (is.null(density)) {
+    density <- ba * 40000 / (pi * qmd^2)
+  } else if (is.null(qmd)) {
+    qmd <- sqrt(ba * 40000 / (pi * density))
+  } else {
+    expected_ba <- density * qmd^2 * pi / 40000
+    if (!is.null(ba) && abs(expected_ba - ba) / expected_ba > 0.01) {
+      warning(sprintf(
+        "Supplied ba (%.2f) doesn't match density and qmd (%.2f implied); using density and qmd, ba argument ignored.",
+        ba, expected_ba))
+    }
+    ba <- expected_ba
+  }
+  list(density = density, qmd = qmd, ba = ba)
+}
+
+# Basal area (m^2/ha): sum of every tree's cross-sectional area at breast
+# height, per hectare. Includes snags (not just live trees), consistent
+# with density and qmd, which are also computed over every tree.
+.basal_area_per_ha <- function(dbh_cm, area_ha) {
+  sum((pi / 4) * (dbh_cm / 100)^2) / area_ha
+}
 
 # Generate DBH values (log-normal) targeting a given QMD and SD.
 # Log-normal is strictly positive so zero DBH is impossible.
@@ -93,9 +131,9 @@
 .write_output <- function(df, output_file, suffix = "") {
   if (is.null(output_file)) {
     date_str    <- format(Sys.Date(), "%Y%m%d")
-    output_file <- paste0("MarkingExport-", date_str, suffix, ".csv")
+    output_file <- paste0("CustomMap_", date_str, suffix, ".csv")
     if (file.exists(output_file)) {
-      output_file <- paste0("MarkingExport-", date_str, suffix,
+      output_file <- paste0("CustomMap_", date_str, suffix,
                              "_", format(Sys.time(), "%H%M%S"), ".csv")
     }
   }
@@ -119,8 +157,9 @@
 
 generate_stem_map <- function(width,
                                height,
-                               density,
-                               qmd,
+                               density       = NULL,
+                               qmd           = NULL,
+                               ba            = NULL,
                                sd_dbh        = qmd * 0.4,
                                p_lopsided    = 0.032,
                                p_leaning     = 0.038,
@@ -130,6 +169,11 @@ generate_stem_map <- function(width,
                                p_snag        = 0.04,
                                seed          = NULL,
                                output_file   = NULL) {
+
+  solved   <- .solve_density_qmd_ba(density, qmd, ba)
+  density  <- solved$density
+  qmd      <- solved$qmd
+  ba       <- solved$ba
 
   area_ha <- (width * height) / 10000
   n       <- round(density * area_ha)
@@ -144,8 +188,10 @@ generate_stem_map <- function(width,
   Y   <- runif(n, 0, height)
   DBH <- .draw_dbh(n, qmd, sd_dbh)
 
-  message(sprintf("Target QMD: %.2f cm | Actual QMD: %.2f cm | SD: %.2f cm",
+  message(sprintf("QMD: %.1f cm | Actual QMD: %.1f cm | SD: %.1f cm",
                   qmd, sqrt(mean(DBH^2)), sd(DBH)))
+  message(sprintf("Basal Area: %.1f m^2/ha | Actual Basal Area: %.1f m^2/ha",
+                  ba, .basal_area_per_ha(DBH, area_ha)))
 
   Height  <- .height_from_dbh(DBH, n)
   defects <- .defect_flags(n, p_lopsided, p_leaning, p_chlorosis,
@@ -161,8 +207,9 @@ generate_stem_map <- function(width,
 
 generate_stem_map_grid <- function(width,
                                     height,
-                                    density,
-                                    qmd,
+                                    density       = NULL,
+                                    qmd           = NULL,
+                                    ba            = NULL,
                                     sd_dbh        = qmd * 0.4,
                                     p_lopsided    = 0.032,
                                     p_leaning     = 0.038,
@@ -173,6 +220,11 @@ generate_stem_map_grid <- function(width,
                                     jitter        = 0.25,
                                     seed          = NULL,
                                     output_file   = NULL) {
+
+  solved   <- .solve_density_qmd_ba(density, qmd, ba)
+  density  <- solved$density
+  qmd      <- solved$qmd
+  ba       <- solved$ba
 
   # Spacing (m) for a square grid at the target density
   spacing <- sqrt(10000 / density)
@@ -209,8 +261,10 @@ generate_stem_map_grid <- function(width,
 
   DBH <- .draw_dbh(n, qmd, sd_dbh)
 
-  message(sprintf("Target QMD: %.2f cm | Actual QMD: %.2f cm | SD: %.2f cm",
+  message(sprintf("QMD: %.1f cm | Actual QMD: %.1f cm | SD: %.1f cm",
                   qmd, sqrt(mean(DBH^2)), sd(DBH)))
+  message(sprintf("Basal Area: %.1f m^2/ha | Actual Basal Area: %.1f m^2/ha",
+                  ba, .basal_area_per_ha(DBH, area_ha)))
 
   Height  <- .height_from_dbh(DBH, n)
   defects <- .defect_flags(n, p_lopsided, p_leaning, p_chlorosis,
@@ -284,3 +338,6 @@ plot_diameter_distribution <- function(result) {
 # Override defect rates (values are probabilities 0–1):
 # generate_stem_map(width = 100, height = 100, density = 150, qmd = 30,
 #                    sd_dbh = 6, p_firescar = 0.05, p_snag = 0.10, seed = 42)
+#
+# Any two of density / qmd / ba determine the third:
+# generate_stem_map(width = 100, height = 100, ba = 15, qmd = 30, seed = 42)

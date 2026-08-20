@@ -37,15 +37,37 @@
     <p>Generate a simulated longleaf pine stand and download it as a CSV ready to load into Pinecraft:</p>
   </div>
 
-  <div class="form-field checkbox-field" style="max-width: 640px;">
-    <label><input type="radio" name="sg-units" value="metric" checked> Metric (ha, cm, m)</label>
-    <label><input type="radio" name="sg-units" value="us"> US units (acres, in, ft)</label>
-  </div>
-
   <form id="stand-generator-form" class="contact-form" style="max-width: 640px;">
-    <div class="form-field checkbox-field">
-      <label><input type="radio" name="sg-pattern" value="random" checked> Natural (random)</label>
-      <label><input type="radio" name="sg-pattern" value="grid"> Planted (grid)</label>
+    <div class="form-field">
+      <div class="toggle-group">
+        <input type="radio" id="sg-units-metric" name="sg-units" value="metric">
+        <label for="sg-units-metric">Metric</label>
+        <input type="radio" id="sg-units-us" name="sg-units" value="us" checked>
+        <label for="sg-units-us">US Units</label>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <div class="toggle-group">
+        <input type="radio" id="sg-pattern-random" name="sg-pattern" value="random" checked>
+        <label for="sg-pattern-random">
+          <svg class="pattern-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <circle cx="1.8" cy="6.2" r="1.1"/><circle cx="5.4" cy="1.6" r="1.3"/><circle cx="9.9" cy="3.4" r="1"/>
+            <circle cx="3" cy="10.6" r="1.3"/><circle cx="7.7" cy="7.6" r="1.5"/><circle cx="12.7" cy="5.9" r="1.1"/>
+            <circle cx="6.2" cy="13.8" r="1.2"/><circle cx="11.1" cy="12.1" r="1.4"/><circle cx="14.3" cy="9.6" r="1"/>
+          </svg>
+          Natural
+        </label>
+        <input type="radio" id="sg-pattern-grid" name="sg-pattern" value="grid">
+        <label for="sg-pattern-grid">
+          <svg class="pattern-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <circle cx="3" cy="3" r="1.3"/><circle cx="8" cy="3" r="1.3"/><circle cx="13" cy="3" r="1.3"/>
+            <circle cx="3" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="13" cy="8" r="1.3"/>
+            <circle cx="3" cy="13" r="1.3"/><circle cx="8" cy="13" r="1.3"/><circle cx="13" cy="13" r="1.3"/>
+          </svg>
+          Planted
+        </label>
+      </div>
     </div>
 
     <div class="grid grid--2">
@@ -65,24 +87,35 @@
       </div>
     </div>
 
-    <div class="form-field">
-      <label for="sg-density">Density (trees / <span id="sg-density-unit">ha</span>)</label>
-      <div class="slider-field">
-        <input type="range" id="sg-density-range" min="10" max="750" step="5" value="150">
-        <input type="number" id="sg-density" name="density" value="150" min="1" step="any" required>
+    <p class="note" style="margin-bottom:12px;">Density, QMD, and Basal Area are mathematically linked. Edit any two and the third recalculates automatically — whichever one you haven't touched most recently. Values are approximate due to randomization.</p>
+
+    <div class="grid grid--2">
+      <div class="form-field">
+        <label for="sg-density">Density (trees / <span id="sg-density-unit">ha</span>)<span id="sg-density-tag" class="derived-tag"></span></label>
+        <div class="slider-field">
+          <input type="range" id="sg-density-range" min="10" max="1980" step="5" value="150">
+          <input type="number" id="sg-density" name="density" value="150" min="1" step="any" required>
+        </div>
+      </div>
+      <div class="form-field">
+        <label for="sg-ba">Basal Area (<span id="sg-ba-unit">m&sup2;/ha</span>)<span id="sg-ba-tag" class="derived-tag"></span></label>
+        <div class="slider-field">
+          <input type="range" id="sg-ba-range" min="1" max="57.39" step="0.1" value="10.6">
+          <input type="number" id="sg-ba" name="ba" value="10.6" min="0.1" step="any" required>
+        </div>
       </div>
     </div>
 
     <div class="grid grid--2">
       <div class="form-field">
-        <label for="sg-qmd">Target QMD (<span id="sg-qmd-unit">cm</span>)</label>
+        <label for="sg-qmd">QMD (<span id="sg-qmd-unit">cm</span>)<span id="sg-qmd-tag" class="derived-tag"></span></label>
         <div class="slider-field">
           <input type="range" id="sg-qmd-range" min="5" max="80" step="0.5" value="30">
           <input type="number" id="sg-qmd" name="qmd" value="30" min="0.1" max="80" step="any" required>
         </div>
       </div>
       <div class="form-field">
-        <label for="sg-sd">DBH Std. Dev. (<span id="sg-sd-unit">cm</span>)</label>
+        <label for="sg-sd">DBH Standard Deviation (<span id="sg-sd-unit">cm</span>)</label>
         <div class="slider-field">
           <input type="range" id="sg-sd-range" min="1" max="30" step="0.5" value="6">
           <input type="number" id="sg-sd" name="sd" value="6" min="0" step="any" required>
@@ -174,7 +207,7 @@
       <tr><th>Density</th><td id="sg-summary-density"></td></tr>
       <tr><th>QMD</th><td id="sg-summary-qmd"></td></tr>
       <tr><th>Basal Area</th><td id="sg-summary-ba"></td></tr>
-      <tr><th>Seed</th><td id="sg-summary-seed"></td></tr>
+      <tr style="opacity:0.6;"><th style="font-size:0.7rem;">Random Seed</th><td id="sg-summary-seed" style="font-size:0.85em;"></td></tr>
     </table>
 
     <div class="stand-preview-legend">
