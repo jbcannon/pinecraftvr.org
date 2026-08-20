@@ -73,13 +73,22 @@
       </p>
     </div>
 
-    <div class="video-frame">
-      <video controls controlsList="nodownload" playsinline preload="metadata">
-        <source src="https://github.com/jbcannon/pinecraftvr.org/releases/download/media.01/pinecraftvr-demo_compressed.mp4" type="video/mp4">
-      </video>
-      <div class="video-click-overlay">
-        <span class="video-play-icon" aria-hidden="true"></span>
+    <div class="video-frame" data-captions='[
+      {"start":0,"end":7,"text":"Load and explore real or imagined stands"},
+      {"start":7,"end":17,"text":"Mark trees for harvest"},
+      {"start":17,"end":22,"text":"View the post-harvest stand"},
+      {"start":22,"end":26,"text":"Explore in bird&#8217;s-eye view"},
+      {"start":26,"end":34,"text":"Play on PC or in VR"}
+    ]'>
+      <div class="video-frame__media">
+        <video controls controlsList="nodownload" playsinline preload="metadata">
+          <source src="https://github.com/jbcannon/pinecraftvr.org/releases/download/media.01/pinecraftvr-demo_compressed.mp4" type="video/mp4">
+        </video>
+        <div class="video-click-overlay">
+          <span class="video-play-icon" aria-hidden="true"></span>
+        </div>
       </div>
+      <div class="video-caption-list"></div>
     </div>
   </div>
 </section>

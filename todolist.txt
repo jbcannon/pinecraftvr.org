@@ -7,15 +7,15 @@ HOW TO USE THIS FILE
   time whenever that piece is ready. Check items off as [x] when done.
 
 *** REMOVE BEFORE PUBLIC LAUNCH ***
-[ ] Pre-launch site gate: tried a client-side JS password gate on
-    2026-08-19, pulled it back out same day (unreliable, and a DNS-level
-    option turned out to be available instead). Set up DNS-based
-    protection (e.g. Cloudflare Access) in front of pinecraftvr.org while
-    the team reviews. Once that's live, or once the team's signed off and
-    the site's ready to go fully public: turn that off, and remove the
+[x] Pre-launch site gate: tried a client-side JS password gate on
+    2026-08-19, pulled it back out same day (unreliable). DNS-based
+    protection (Cloudflare Access) is now set up in front of
+    pinecraftvr.org while the team reviews, confirmed live 2026-08-20.
+[ ] Once the team's signed off and the site's ready to go fully public:
+    turn off the Cloudflare Access gate, and remove the
     <meta name="robots" content="noindex, nofollow"> line from all 7
     pages' <head> (index, about, contact, customize, download, gallery,
-    tutorial), added 2026-08-19 alongside the gate attempt.
+    tutorial), added 2026-08-19.
 [ ] "Under Construction" banner (yellow/black stripes, top of every page
     via partials/header.html) should also come down once the team's
     signed off and this goes fully public.
@@ -102,9 +102,8 @@ Ordered by what actually blocks what — not just top-to-bottom.
 [x] DNS confirmed pointed at GitHub Pages for both the apex domain and
     www subdomain
 [x] Custom domain set in GitHub repo Settings > Pages
-[ ] Double-check HTTPS enforcement is turned on in Settings > Pages —
-    worth a quick look next time you're in there, wasn't explicitly
-    confirmed
+[x] HTTPS enforcement turned on in Settings > Pages, confirmed 2026-08-20
+    -> http://pinecraftvr.org now 301-redirects straight to https://
 
 ===============================================================================
 PHASE 2 — OPEN SOURCE UNREAL PROJECT
@@ -180,16 +179,20 @@ BACKLOG / IDEAS (not yet scheduled)
     "media.01" tag) and onto YouTube for faster loading, adaptive bitrate
     streaming will perform better for visitors on slow/mobile connections
     than a single fixed-quality file.
-[ ] Add tooltips/callouts to the demo video on index.html explaining what's
-    happening on screen as gameplay unfolds (marking, inspecting, the
-    overhead map, etc.), so first-time visitors don't have to guess what
-    they're watching.
-[ ] Stand Generator stem-map preview (customize.html): the hover tooltip on
-    the canvas always shows DBH/height in metric (cm/m), even when the
-    units toggle is set to US. Should read whichever unit the form is
-    currently displaying, same as the rest of the tool. Likely fix in
-    assets/js/stand-generator.js's canvas mousemove handler, near where
-    the tooltip label string gets built.
+[x] Added a timed HUD-style caption list to the demo video on index.html:
+    all cues sit as a persistent agenda on the right side, the active one
+    lit up in cyan (glow + breathing dot), the rest dimmed. Driven by a
+    data-captions JSON attribute on .video-frame, generated and toggled
+    generically in main.js so any future video can opt in the same way.
+    Current cues (gapless, each runs until the next starts): 0-7s "Load
+    and explore real or imagined stands," 7-17s "Mark trees for harvest,"
+    17-22s "View the post-harvest stand," 22-26s "Explore in bird's-eye
+    view," 26-34s "Play on PC or in VR." More cues can be added any time
+    by editing that JSON array in index.html.
+[x] Stand Generator stem-map preview (customize.html): fixed the hover
+    tooltip that always showed metric regardless of the units toggle.
+    Now converts DBH/height at display time in the canvas mousemove
+    handler, same as the rest of the tool. Fixed and verified 2026-08-20.
 [x] SavedData/Local (load custom maps) and SavedData/Export (marked-tree
     export) folder paths confirmed against Devhouse's handoff PDF — see
     note under Getting Started above.

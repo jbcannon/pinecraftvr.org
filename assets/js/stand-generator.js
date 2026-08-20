@@ -440,7 +440,12 @@
     }
 
     if (nearest) {
-      var label = 'DBH ' + nearest.dbh.toFixed(1) + ' cm · Height ' + nearest.height.toFixed(1) + ' m';
+      var us = isUS();
+      var dbhDisplay = us ? toUS(nearest.dbh, CM_PER_IN) : nearest.dbh;
+      var heightDisplay = us ? toUS(nearest.height, M_PER_FT) : nearest.height;
+      var diamUnit = us ? 'in' : 'cm';
+      var lenUnit = us ? 'ft' : 'm';
+      var label = 'DBH ' + dbhDisplay.toFixed(1) + ' ' + diamUnit + ' · Height ' + heightDisplay.toFixed(1) + ' ' + lenUnit;
       if (nearest.isSnag) {
         label += ' · Snag (dead)';
       } else if (nearest.defectLabels.length) {

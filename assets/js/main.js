@@ -68,6 +68,37 @@ document.querySelectorAll('.video-click-overlay').forEach(function (overlay) {
   // so the big play icon also reappears if paused via the native controls.
   video.addEventListener('play', function () { frame.classList.add('is-playing'); });
   video.addEventListener('pause', function () { frame.classList.remove('is-playing'); });
+
+  // Optional timed caption list: a data-captions JSON array of {start,
+  // end, text} (seconds) on .video-frame. Any video can opt in this way,
+  // just add the attribute and a .video-caption-list div. Every cue is
+  // rendered up front as a persistent item; only the "active" class
+  // moves as playback progresses.
+  if (frame.dataset.captions) {
+    var cues = JSON.parse(frame.dataset.captions);
+    var listEl = frame.querySelector('.video-caption-list');
+    if (listEl) {
+      var items = cues.map(function (cue) {
+        var item = document.createElement('div');
+        item.className = 'video-caption-item';
+        var mark = document.createElement('span');
+        mark.className = 'video-caption-item__mark';
+        var text = document.createElement('span');
+        text.className = 'video-caption-item__text';
+        text.textContent = cue.text;
+        item.appendChild(mark);
+        item.appendChild(text);
+        listEl.appendChild(item);
+        return item;
+      });
+      video.addEventListener('timeupdate', function () {
+        var t = video.currentTime;
+        cues.forEach(function (cue, i) {
+          items[i].classList.toggle('is-active', t >= cue.start && t < cue.end);
+        });
+      });
+    }
+  }
 });
 
 // Opens a <details> (e.g. a Getting Started guide section) when the URL

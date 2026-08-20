@@ -4,3 +4,7 @@ Thumbs.db
 # Large source media that gets uploaded as GitHub Release assets, not
 # committed to the repo (keeps the git history small and fast to clone).
 /media-source/
+
+# Unreal Engine project source, staged here temporarily. Getting its own
+# GitHub repo later (see todolist.txt, Phase 2); not meant for this repo.
+/pinecraft-v1.0-source/
