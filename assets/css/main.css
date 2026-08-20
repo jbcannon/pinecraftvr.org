@@ -606,6 +606,19 @@ table.specs th {
   color: var(--ink-soft);
   font-style: italic;
 }
+/* Sub-section heading within a details block (e.g. inside Advanced
+   Settings) — same bold-caps treatment as the details' own <summary>,
+   one notch smaller so the hierarchy (Advanced Settings > sub-section)
+   still reads clearly. */
+.section-label {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--forest-dark);
+}
 
 /* ==========================================================================
    Stand Generator preview
@@ -847,8 +860,40 @@ table.specs th {
   accent-color: var(--accent-cyan);
 }
 .slider-field input[type="number"] {
-  width: 80px;
+  width: 100px;
   flex: none;
+}
+/* Min/mid/max labels directly under a slider, each with a small tick dash
+   above it. Native <input type=range> widgets are drawn by the OS/browser
+   as a single opaque unit, so anything positioned over or under the track
+   itself gets painted over regardless of z-index — putting the ticks here,
+   below the track and attached to the numbers, sidesteps that entirely.
+   Right-margin matches the number input's width + the slider-field gap, so
+   the row lines up under the range track rather than spanning the number
+   field too. */
+.slider-scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2px;
+  margin-right: 112px;
+  padding-top: 6px;
+  padding-left: 2px;
+  padding-right: 2px;
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+}
+.slider-scale span {
+  position: relative;
+}
+.slider-scale span::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 5px;
+  background: rgba(75, 83, 70, 0.45);
 }
 .form-field input:disabled {
   background: #ece7d6;

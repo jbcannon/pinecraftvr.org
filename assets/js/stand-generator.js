@@ -78,6 +78,7 @@
   var qmdInput = document.getElementById('sg-qmd');
   var sdInput = document.getElementById('sg-sd');
   var baInput = document.getElementById('sg-ba');
+  var bimodalRange = document.getElementById('sg-bimodal-range');
 
   var widthRange = document.getElementById('sg-width-range');
   var heightRange = document.getElementById('sg-height-range');
@@ -85,6 +86,50 @@
   var qmdRange = document.getElementById('sg-qmd-range');
   var sdRange = document.getElementById('sg-sd-range');
   var baRange = document.getElementById('sg-ba-range');
+
+  var widthScale = {
+    min: document.getElementById('sg-width-scale-min'),
+    mid: document.getElementById('sg-width-scale-mid'),
+    max: document.getElementById('sg-width-scale-max')
+  };
+  var heightScale = {
+    min: document.getElementById('sg-height-scale-min'),
+    mid: document.getElementById('sg-height-scale-mid'),
+    max: document.getElementById('sg-height-scale-max')
+  };
+  var densityScale = {
+    min: document.getElementById('sg-density-scale-min'),
+    mid: document.getElementById('sg-density-scale-mid'),
+    max: document.getElementById('sg-density-scale-max')
+  };
+  var qmdScale = {
+    min: document.getElementById('sg-qmd-scale-min'),
+    mid: document.getElementById('sg-qmd-scale-mid'),
+    max: document.getElementById('sg-qmd-scale-max')
+  };
+  var sdScale = {
+    min: document.getElementById('sg-sd-scale-min'),
+    mid: document.getElementById('sg-sd-scale-mid'),
+    max: document.getElementById('sg-sd-scale-max')
+  };
+  var baScale = {
+    min: document.getElementById('sg-ba-scale-min'),
+    mid: document.getElementById('sg-ba-scale-mid'),
+    max: document.getElementById('sg-ba-scale-max')
+  };
+  // Min/mid/max labels under the slider track, kept in sync with whatever
+  // the current min/max happen to be (they move on every unit toggle).
+  // Written directly as text rather than via a <datalist> — native range
+  // tick marks never show numbers anyway, and rely on the browser
+  // re-clamping ticks to a moved min/max, which isn't reliable everywhere.
+  function setRangeScale(rangeEl, scale) {
+    var min = parseFloat(rangeEl.min);
+    var max = parseFloat(rangeEl.max);
+    var mid = round1((min + max) / 2);
+    scale.min.textContent = min;
+    scale.mid.textContent = mid;
+    scale.max.textContent = max;
+  }
 
   // Slider <-> number stay in sync either direction. Typing a value outside
   // the slider's 10-250 range is still allowed in the number field. The
@@ -131,7 +176,7 @@
     var v = parseFloat(input.value);
     if (isNaN(v)) return;
     var converted = toUSUnits ? toUS(v, factor) : toMetric(v, factor);
-    input.value = round2(converted);
+    input.value = round1(converted);
   }
 
   // Slider min/max are set from these fixed metric bounds every toggle,
@@ -139,11 +184,27 @@
   // toggling back and forth can't drift the bounds.
   var METRIC_BOUNDS = {
     width: [10, 250], height: [10, 250],
-    density: [10, 1980], qmd: [5, 80], sd: [1, 30], ba: [1, 57.39]
+    density: [10, 1980], qmd: [2.54, 100], sd: [1, 30], ba: [0.1, 57.4]
   };
   function setRangeBounds(rangeEl, metricMin, metricMax, factor, toUSUnits) {
-    rangeEl.min = round2(toUSUnits ? toUS(metricMin, factor) : metricMin);
-    rangeEl.max = round2(toUSUnits ? toUS(metricMax, factor) : metricMax);
+    rangeEl.min = round1(toUSUnits ? toUS(metricMin, factor) : metricMin);
+    rangeEl.max = round1(toUSUnits ? toUS(metricMax, factor) : metricMax);
+  }
+
+  // Slider steps chosen separately per unit system, not converted from one
+  // another, so dragging always snaps to round, human-friendly increments
+  // in whichever units are showing (converting e.g. a 1m step into US
+  // units gives an oddball 3.28ft step; 1ft reads far better).
+  var STEP_BY_UNIT = {
+    width:   { metric: 1,   us: 1 },
+    height:  { metric: 1,   us: 1 },
+    density: { metric: 5,   us: 2 },
+    qmd:     { metric: 0.5, us: 0.25 },
+    sd:      { metric: 0.5, us: 0.25 },
+    ba:      { metric: 0.1, us: 0.5 }
+  };
+  function setRangeStep(rangeEl, field, toUSUnits) {
+    rangeEl.step = toUSUnits ? STEP_BY_UNIT[field].us : STEP_BY_UNIT[field].metric;
   }
 
   // Live-convert the displayed numbers (and unit labels) whenever the
@@ -167,6 +228,18 @@
     setRangeBounds(qmdRange, METRIC_BOUNDS.qmd[0], METRIC_BOUNDS.qmd[1], CM_PER_IN, us);
     setRangeBounds(sdRange, METRIC_BOUNDS.sd[0], METRIC_BOUNDS.sd[1], CM_PER_IN, us);
     setRangeBounds(baRange, METRIC_BOUNDS.ba[0], METRIC_BOUNDS.ba[1], BA_FACTOR, us);
+    setRangeStep(widthRange, 'width', us);
+    setRangeStep(heightRange, 'height', us);
+    setRangeStep(densityRange, 'density', us);
+    setRangeStep(qmdRange, 'qmd', us);
+    setRangeStep(sdRange, 'sd', us);
+    setRangeStep(baRange, 'ba', us);
+    setRangeScale(widthRange, widthScale);
+    setRangeScale(heightRange, heightScale);
+    setRangeScale(densityRange, densityScale);
+    setRangeScale(qmdRange, qmdScale);
+    setRangeScale(sdRange, sdScale);
+    setRangeScale(baRange, baScale);
     syncRangeToNumber(widthRange, widthInput);
     syncRangeToNumber(heightRange, heightInput);
     syncRangeToNumber(densityRange, densityInput);
@@ -182,6 +255,7 @@
     baUnitEl.innerHTML = us ? 'ft&sup2;/acre' : 'm&sup2;/ha';
 
     updateDerived();
+    drawDistributionPreview();
   }
   unitsRadios.forEach(function (radio) {
     radio.addEventListener('change', applyUnitsDisplay);
@@ -224,7 +298,7 @@
   }
   function writeDisplayValue(input, rangeEl, metricValue, factor) {
     var v = isUS() ? toUS(metricValue, factor) : metricValue;
-    input.value = round2(v);
+    input.value = round1(v);
     syncRangeToNumber(rangeEl, input);
   }
   function clamp(v, min, max) {
@@ -240,7 +314,6 @@
     Object.keys(derivedTagEls).forEach(function (name) {
       var tag = derivedTagEls[name];
       var isTarget = name === target;
-      tag.textContent = isTarget ? 'calculated' : '';
       var field = tag.closest('.form-field');
       if (field) field.classList.toggle('is-derived', isTarget);
     });
@@ -312,6 +385,7 @@
 
   // ── Small math helpers ──────────────────────────────────────────────────
   function round2(x) { return Math.round(x * 100) / 100; }
+  function round1(x) { return Math.round(x * 10) / 10; }
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
   function mean(arr) { return arr.reduce(function (a, b) { return a + b; }, 0) / arr.length; }
   function stddev(arr) {
@@ -342,18 +416,44 @@
 
   // ── Core generation, ported from stand_generator.R ──────────────────────
 
-  // Log-normal DBH targeting a given QMD and SD (same parameterization as
-  // .draw_dbh() in stand_generator.R).
-  function drawDBH(n, qmd, sdDbh, rng) {
+  // Log-normal parameterization targeting a given QMD and SD (same as
+  // .draw_dbh() in stand_generator.R). Shared by the actual random draw
+  // below and by the theoretical preview curve, so the chart always shows
+  // exactly the distribution trees are really being drawn from.
+  function logNormalParams(qmd, sdDbh) {
     var sigma2 = Math.log(1 + Math.pow(sdDbh / qmd, 2));
-    var mu = Math.log(qmd) - sigma2;
-    var sigma = Math.sqrt(sigma2);
+    return { mu: Math.log(qmd) - sigma2, sigma: Math.sqrt(sigma2) };
+  }
+
+  function drawDBH(n, qmd, sdDbh, rng) {
+    var lp = logNormalParams(qmd, sdDbh);
     var out = [];
     for (var i = 0; i < n; i++) {
-      var dbh = Math.exp(mu + sigma * gaussian(rng));
+      var dbh = Math.exp(lp.mu + lp.sigma * gaussian(rng));
       out.push(Math.max(0.1, round2(dbh)));
     }
     return out;
+  }
+
+  // Bimodal splits the stand into two equal-sized cohorts with QMDs pulled
+  // symmetrically apart from the target QMD, each still drawn with the same
+  // SD. At bimodalT=0 both cohorts collapse back to a single drawDBH call.
+  // Cohort assignment is shuffled (not tied to tree generation order) so
+  // the two size classes end up scattered across the plot rather than
+  // clustered — this matters most for the grid pattern, where leaving the
+  // first half of trees in cohort 1 would visibly segregate them by row.
+  function drawDBHMixture(n, qmd, sdDbh, bimodalT, rng) {
+    if (!(bimodalT > 0)) return drawDBH(n, qmd, sdDbh, rng);
+    var halfSep = bimodalT * 2 * sdDbh;
+    var qmdLow = Math.max(0.5, qmd - halfSep);
+    var qmdHigh = qmd + halfSep;
+    var n1 = Math.round(n / 2);
+    var combined = drawDBH(n1, qmdLow, sdDbh, rng).concat(drawDBH(n - n1, qmdHigh, sdDbh, rng));
+    for (var i = combined.length - 1; i > 0; i--) {
+      var j = Math.floor(rng() * (i + 1));
+      var tmp = combined[i]; combined[i] = combined[j]; combined[j] = tmp;
+    }
+    return combined;
   }
 
   // Chapman-Richards H-D model calibrated to longleaf pine (same formula
@@ -392,7 +492,7 @@
       X.push(rng() * p.widthM);
       Y.push(rng() * p.heightM);
     }
-    var DBH = drawDBH(n, p.qmd, p.sd, rng);
+    var DBH = drawDBHMixture(n, p.qmd, p.sd, p.bimodal, rng);
     var Height = heightFromDBH(DBH, rng);
     var defects = buildDefects(n, p, rng);
     return { X: X, Y: Y, DBH: DBH, Height: Height, defects: defects, n: n, areaHa: areaHa };
@@ -419,7 +519,7 @@
       }
     }
     var n = X.length;
-    var DBH = drawDBH(n, p.qmd, p.sd, rng);
+    var DBH = drawDBHMixture(n, p.qmd, p.sd, p.bimodal, rng);
     var Height = heightFromDBH(DBH, rng);
     var defects = buildDefects(n, p, rng);
     var areaHa = (p.widthM * p.heightM) / 10000;
@@ -617,6 +717,115 @@
     return totalM2 / result.areaHa;
   }
 
+  // ── Projected diameter distribution (theoretical preview curve) ─────────
+  // Unlike the histogram below, this isn't sampled from a generated stand —
+  // it's the log-normal PDF(s) implied directly by the current QMD/SD/
+  // Bimodal fields, using the exact same logNormalParams() the real draw
+  // uses, so it updates live as those sliders move, before Generate is ever
+  // clicked.
+  var distCanvas = document.getElementById('sg-distribution-canvas');
+  var distCtx = distCanvas ? distCanvas.getContext('2d') : null;
+  var distScaleMinEl = document.getElementById('sg-distribution-scale-min');
+  var distScaleMidEl = document.getElementById('sg-distribution-scale-mid');
+  var distScaleMaxEl = document.getElementById('sg-distribution-scale-max');
+
+  function lognormalPDF(x, mu, sigma) {
+    if (x <= 0) return 0;
+    var z = (Math.log(x) - mu) / sigma;
+    return Math.exp(-0.5 * z * z) / (x * sigma * Math.sqrt(2 * Math.PI));
+  }
+
+  function drawDistributionPreview() {
+    if (!distCtx) return;
+    var qmd = metricValueOf(qmdInput, CM_PER_IN);
+    var sd = metricValueOf(sdInput, CM_PER_IN);
+    var bimodalT = bimodalRange ? parseFloat(bimodalRange.value) : 0;
+    if (!(qmd > 0) || !(sd > 0)) return;
+
+    var halfSep = bimodalT * 2 * sd;
+    var qmdLow = Math.max(0.5, qmd - halfSep);
+    var qmdHigh = qmd + halfSep;
+    var pLow = logNormalParams(qmdLow, sd);
+    var pHigh = logNormalParams(qmdHigh, sd);
+
+    // Fixed 0-to-max-QMD frame (rather than auto-zooming to the current
+    // curve) so the axis stays put as sliders move, making it easy to
+    // compare shapes across different settings. A separated bimodal curve
+    // can run past this and get clipped at the right edge — acceptable,
+    // since the frame staying fixed is the point.
+    var xMin = 0;
+    var xMax = METRIC_BOUNDS.qmd[1];
+
+    var cssW = 600, cssH = 140;
+    var dpr = window.devicePixelRatio || 1;
+    distCanvas.style.width = '100%';
+    distCanvas.style.height = cssH + 'px';
+    distCanvas.width = cssW * dpr;
+    distCanvas.height = cssH * dpr;
+    distCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    distCtx.clearRect(0, 0, cssW, cssH);
+
+    var padL = 4, padR = 4, padT = 8, padB = 4;
+    var plotW = cssW - padL - padR;
+    var plotH = cssH - padT - padB;
+
+    var STEPS = 160;
+    var ys = [];
+    var maxY = 0;
+    for (var i = 0; i <= STEPS; i++) {
+      var x = xMin + (xMax - xMin) * (i / STEPS);
+      var y = 0.5 * lognormalPDF(x, pLow.mu, pLow.sigma) + 0.5 * lognormalPDF(x, pHigh.mu, pHigh.sigma);
+      ys.push(y);
+      if (y > maxY) maxY = y;
+    }
+    if (!(maxY > 0)) return;
+
+    function pointAt(i) {
+      return {
+        x: padL + (i / STEPS) * plotW,
+        y: padT + plotH - (ys[i] / maxY) * plotH
+      };
+    }
+
+    distCtx.beginPath();
+    for (var s = 0; s <= STEPS; s++) {
+      var pt = pointAt(s);
+      if (s === 0) distCtx.moveTo(pt.x, pt.y); else distCtx.lineTo(pt.x, pt.y);
+    }
+    distCtx.lineTo(padL + plotW, padT + plotH);
+    distCtx.lineTo(padL, padT + plotH);
+    distCtx.closePath();
+    distCtx.fillStyle = 'rgba(90,111,61,0.25)';
+    distCtx.fill();
+
+    distCtx.beginPath();
+    for (var s2 = 0; s2 <= STEPS; s2++) {
+      var pt2 = pointAt(s2);
+      if (s2 === 0) distCtx.moveTo(pt2.x, pt2.y); else distCtx.lineTo(pt2.x, pt2.y);
+    }
+    distCtx.strokeStyle = 'rgba(90,111,61,0.9)';
+    distCtx.lineWidth = 2;
+    distCtx.stroke();
+
+    distCtx.strokeStyle = 'rgba(75,83,70,0.4)';
+    distCtx.lineWidth = 1;
+    distCtx.beginPath();
+    distCtx.moveTo(padL, padT + plotH);
+    distCtx.lineTo(padL + plotW, padT + plotH);
+    distCtx.stroke();
+
+    var us = isUS();
+    var unitLabel = us ? ' in' : ' cm';
+    function fmt(v) { return (us ? toUS(v, CM_PER_IN) : v).toFixed(1) + unitLabel; }
+    if (distScaleMinEl) distScaleMinEl.textContent = fmt(xMin);
+    if (distScaleMidEl) distScaleMidEl.textContent = fmt(qmd);
+    if (distScaleMaxEl) distScaleMaxEl.textContent = fmt(xMax);
+  }
+
+  [qmdRange, qmdInput, sdRange, sdInput, bimodalRange].forEach(function (el) {
+    el.addEventListener('input', drawDistributionPreview);
+  });
+
   // ── Diameter distribution (histogram) ───────────────────────────────────
   var histCanvas = document.getElementById('sg-histogram-canvas');
   var histCtx = histCanvas.getContext('2d');
@@ -766,6 +975,7 @@
 
       var params = {
         widthM: widthM, heightM: heightM, density: density, qmd: qmd, sd: sd,
+        bimodal: parseFloat(document.getElementById('sg-bimodal-range').value) || 0,
         pLopsided: parseFloat(document.getElementById('sg-lopsided').value) / 100,
         pLeaning: parseFloat(document.getElementById('sg-leaning').value) / 100,
         pChlorosis: parseFloat(document.getElementById('sg-chlorosis').value) / 100,
@@ -831,6 +1041,7 @@
     applyUnitsDisplay();
   } else {
     updateDerived();
+    drawDistributionPreview();
   }
 
   // Auto-generate an initial stand on load (using the default settings)
