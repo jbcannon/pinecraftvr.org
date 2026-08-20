@@ -162,6 +162,65 @@
     rangeEl.value = Math.max(min, Math.min(max, v));
   }
 
+  // Chain-link toggle: while linked, Width and Height move together as a
+  // square (whichever you edit copies onto the other); click to break the
+  // link and size them independently. Re-linking snaps Height to match
+  // Width's current value.
+  var dimsLinkBtn = document.getElementById('sg-dims-link');
+  var dimsLinked = true;
+  var LINK_ICON = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="2" y="5" width="7" height="6" rx="3"/><rect x="7" y="5" width="7" height="6" rx="3"/></svg>';
+  var UNLINK_ICON = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="1" y="5" width="6" height="6" rx="3"/><rect x="9" y="5" width="6" height="6" rx="3"/></svg>';
+  function updateDimsLinkButton() {
+    dimsLinkBtn.setAttribute('aria-pressed', dimsLinked ? 'true' : 'false');
+    dimsLinkBtn.title = dimsLinked
+      ? 'Width and height move together — click to size them independently'
+      : 'Width and height move independently — click to link as a square';
+    dimsLinkBtn.innerHTML = dimsLinked ? LINK_ICON : UNLINK_ICON;
+  }
+  dimsLinkBtn.addEventListener('click', function () {
+    dimsLinked = !dimsLinked;
+    if (dimsLinked) {
+      heightInput.value = widthInput.value;
+      syncRangeToNumber(heightRange, heightInput);
+    }
+    updateDimsLinkButton();
+  });
+  updateDimsLinkButton();
+  [widthRange, widthInput].forEach(function (el) {
+    el.addEventListener('input', function () {
+      if (!dimsLinked) return;
+      heightInput.value = widthInput.value;
+      syncRangeToNumber(heightRange, heightInput);
+    });
+  });
+  [heightRange, heightInput].forEach(function (el) {
+    el.addEventListener('input', function () {
+      if (!dimsLinked) return;
+      widthInput.value = heightInput.value;
+      syncRangeToNumber(widthRange, widthInput);
+    });
+  });
+
+  // Live plot-area readout next to "Stand Dimensions", recomputed from
+  // whatever's currently in the Width/Height fields (in whichever units
+  // are displayed).
+  var areaDisplayEl = document.getElementById('sg-area-display');
+  function updateAreaDisplay() {
+    var widthM = metricValueOf(widthInput, M_PER_FT);
+    var heightM = metricValueOf(heightInput, M_PER_FT);
+    if (!(widthM > 0) || !(heightM > 0)) {
+      areaDisplayEl.textContent = '';
+      return;
+    }
+    var areaHa = (widthM * heightM) / 10000;
+    var us = isUS();
+    var areaDisplay = us ? areaHa * ACRES_PER_HA : areaHa;
+    areaDisplayEl.textContent = round1(areaDisplay) + ' ' + (us ? 'acres' : 'ha');
+  }
+  [widthRange, widthInput, heightRange, heightInput].forEach(function (el) {
+    el.addEventListener('input', updateAreaDisplay);
+  });
+
   var widthUnitEl = document.getElementById('sg-width-unit');
   var heightUnitEl = document.getElementById('sg-height-unit');
   var densityUnitEl = document.getElementById('sg-density-unit');
@@ -183,7 +242,7 @@
   // never derived from whatever the slider currently has, so repeated
   // toggling back and forth can't drift the bounds.
   var METRIC_BOUNDS = {
-    width: [10, 250], height: [10, 250],
+    width: [10, 304.8], height: [10, 304.8],
     density: [10, 1980], qmd: [2.54, 100], sd: [1, 30], ba: [0.1, 57.4]
   };
   function setRangeBounds(rangeEl, metricMin, metricMax, factor, toUSUnits) {
@@ -256,6 +315,7 @@
 
     updateDerived();
     drawDistributionPreview();
+    updateAreaDisplay();
   }
   unitsRadios.forEach(function (radio) {
     radio.addEventListener('change', applyUnitsDisplay);
@@ -1042,6 +1102,7 @@
   } else {
     updateDerived();
     drawDistributionPreview();
+    updateAreaDisplay();
   }
 
   // Auto-generate an initial stand on load (using the default settings)

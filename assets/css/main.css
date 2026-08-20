@@ -620,6 +620,29 @@ table.specs th {
   color: var(--forest-dark);
 }
 
+/* Chain-link toggle: linked (pressed) keeps two fields equal, e.g. Plot
+   Width/Height moving together as a square; click to break the link and
+   move them independently. */
+.link-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid #e3ddc9;
+  border-radius: var(--radius);
+  background: var(--white);
+  color: var(--ink-soft);
+  cursor: pointer;
+  flex: none;
+}
+.link-toggle[aria-pressed="true"] {
+  background: var(--forest-mid);
+  border-color: var(--forest-mid);
+  color: var(--white);
+}
+
 /* ==========================================================================
    Stand Generator preview
    ========================================================================== */
@@ -860,7 +883,7 @@ table.specs th {
   accent-color: var(--accent-cyan);
 }
 .slider-field input[type="number"] {
-  width: 100px;
+  width: 80px;
   flex: none;
 }
 /* Min/mid/max labels directly under a slider, each with a small tick dash
@@ -875,7 +898,7 @@ table.specs th {
   display: flex;
   justify-content: space-between;
   margin-top: 2px;
-  margin-right: 112px;
+  margin-right: 92px;
   padding-top: 6px;
   padding-left: 2px;
   padding-right: 2px;

@@ -24,6 +24,13 @@
 #                   as the diameter of the tree of average basal area.
 #                   Provide any two; the third is calculated automatically.
 #   sd_dbh        - Standard deviation of DBH, cm (spread of the distribution)
+#   bimodal       - 0 (unimodal, default) to 1 (bimodal). Splits the stand
+#                   into two equal-sized cohorts whose QMDs pull apart
+#                   symmetrically from qmd as this increases (e.g. an
+#                   overstory + a younger age class), scattered randomly
+#                   across the plot rather than clustered. Actual spread
+#                   (SD) in the generated stand runs higher than sd_dbh as
+#                   a result.
 #   p_lopsided, p_leaning, p_chlorosis, p_firescar, p_canker, p_snag
 #                 - Per-tree defect probabilities, 0-1. A snag is recorded
 #                   as dead with every other defect forced off. A snag
@@ -85,6 +92,25 @@
   dbh    <- rlnorm(n, meanlog = mu, sdlog = sqrt(sigma2))
   pmax(0.1, round(dbh, 2))   # hard floor at 0.1 cm; log-normal can't hit 0
                                # but this guards against extreme rounding
+}
+
+# Bimodal splits the stand into two equal-sized cohorts with QMDs pulled
+# symmetrically apart from the target QMD, each still drawn with the same
+# SD. At bimodal<=0 both cohorts collapse back to a single .draw_dbh() call.
+# Cohort assignment is shuffled (not tied to generation order) so the two
+# size classes end up scattered across the plot rather than clustered —
+# this matters most for the grid pattern, where leaving the first half of
+# trees in cohort 1 would visibly segregate them by row.
+.draw_dbh_mixture <- function(n, qmd, sd_dbh, bimodal) {
+  if (is.null(bimodal) || bimodal <= 0) {
+    return(.draw_dbh(n, qmd, sd_dbh))
+  }
+  half_sep <- bimodal * 2 * sd_dbh
+  qmd_low  <- max(0.5, qmd - half_sep)
+  qmd_high <- qmd + half_sep
+  n1       <- round(n / 2)
+  combined <- c(.draw_dbh(n1, qmd_low, sd_dbh), .draw_dbh(n - n1, qmd_high, sd_dbh))
+  sample(combined)
 }
 
 # Chapman-Richards H-D model calibrated to longleaf pine data.
@@ -161,6 +187,7 @@ generate_stem_map <- function(width,
                                qmd           = NULL,
                                ba            = NULL,
                                sd_dbh        = qmd * 0.4,
+                               bimodal       = 0,
                                p_lopsided    = 0.032,
                                p_leaning     = 0.038,
                                p_chlorosis   = 0.002,
@@ -186,7 +213,7 @@ generate_stem_map <- function(width,
 
   X   <- runif(n, 0, width)
   Y   <- runif(n, 0, height)
-  DBH <- .draw_dbh(n, qmd, sd_dbh)
+  DBH <- .draw_dbh_mixture(n, qmd, sd_dbh, bimodal)
 
   message(sprintf("QMD: %.1f cm | Actual QMD: %.1f cm | SD: %.1f cm",
                   qmd, sqrt(mean(DBH^2)), sd(DBH)))
@@ -211,6 +238,7 @@ generate_stem_map_grid <- function(width,
                                     qmd           = NULL,
                                     ba            = NULL,
                                     sd_dbh        = qmd * 0.4,
+                                    bimodal       = 0,
                                     p_lopsided    = 0.032,
                                     p_leaning     = 0.038,
                                     p_chlorosis   = 0.002,
@@ -259,7 +287,7 @@ generate_stem_map_grid <- function(width,
   X <- grid$X + runif(n, -jitter, jitter)
   Y <- grid$Y + runif(n, -jitter, jitter)
 
-  DBH <- .draw_dbh(n, qmd, sd_dbh)
+  DBH <- .draw_dbh_mixture(n, qmd, sd_dbh, bimodal)
 
   message(sprintf("QMD: %.1f cm | Actual QMD: %.1f cm | SD: %.1f cm",
                   qmd, sqrt(mean(DBH^2)), sd(DBH)))
@@ -341,3 +369,8 @@ plot_diameter_distribution <- function(result) {
 #
 # Any two of density / qmd / ba determine the third:
 # generate_stem_map(width = 100, height = 100, ba = 15, qmd = 30, seed = 42)
+#
+# Bimodal diameter distribution (e.g. an overstory + a younger age class):
+# result_bimodal <- generate_stem_map(width = 100, height = 100, density = 150,
+#                                      qmd = 30, sd_dbh = 6, bimodal = 1, seed = 42)
+# plot_diameter_distribution(result_bimodal)
