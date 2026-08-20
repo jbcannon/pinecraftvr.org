@@ -240,6 +240,9 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   overflow: hidden;
   color: var(--cream);
   padding: 72px 0 88px;
+  background-image: url('../img/photos/wiregrass-longleaf.jpg');
+  background-size: cover;
+  background-position: center 60%;
 }
 .hero__bg-video {
   position: absolute;
@@ -310,6 +313,15 @@ section.section {
 }
 section.section--alt {
   background: var(--cream-dim);
+}
+/* Wiregrass photo behind narrative/story sections (not every .section--alt,
+   skipped on data-heavy or photo-grid sections like System Requirements
+   and The Team), tinted with the section's own cream to keep text readable. */
+section.section--photo-bg {
+  background-image: linear-gradient(rgba(238,233,219,0.88), rgba(238,233,219,0.88)),
+    url('../img/photos/wiregrass-longleaf.jpg');
+  background-size: cover;
+  background-position: center 60%;
 }
 .section__heading {
   max-width: 640px;
