@@ -534,9 +534,18 @@
   // first half of trees in cohort 1 would visibly segregate them by row.
   function drawDBHMixture(n, qmd, sdDbh, bimodalT, rng) {
     if (!(bimodalT > 0)) return drawDBH(n, qmd, sdDbh, rng);
-    var halfSep = bimodalT * 2 * sdDbh;
-    var qmdLow = Math.max(0.5, qmd - halfSep);
-    var qmdHigh = qmd + halfSep;
+    // Split QMD² (not QMD itself) symmetrically between the two cohorts, so
+    // their combined quadratic mean stays locked to the target QMD no
+    // matter how far apart bimodal pulls them. Splitting QMD directly (the
+    // obvious approach) systematically inflates the realized QMD/Basal
+    // Area, because quadratic mean is convex: separating two values while
+    // holding their arithmetic center fixed always raises the quadratic
+    // mean above that center — worse the more they're separated (higher
+    // bimodal) and the wider each cohort already is (higher sd_dbh), which
+    // is exactly the combination that was blowing BA out.
+    var t = Math.min(0.95, bimodalT * 4 * (sdDbh / qmd));
+    var qmdLow = qmd * Math.sqrt(1 - t);
+    var qmdHigh = qmd * Math.sqrt(1 + t);
     var n1 = Math.round(n / 2);
     var combined = drawDBH(n1, qmdLow, sdDbh, rng).concat(drawDBH(n - n1, qmdHigh, sdDbh, rng));
     for (var i = combined.length - 1; i > 0; i--) {

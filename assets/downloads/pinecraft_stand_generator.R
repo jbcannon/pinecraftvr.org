@@ -113,9 +113,17 @@
   if (is.null(bimodal) || bimodal <= 0) {
     return(.draw_dbh(n, qmd, sd_dbh))
   }
-  half_sep <- bimodal * 2 * sd_dbh
-  qmd_low  <- max(0.5, qmd - half_sep)
-  qmd_high <- qmd + half_sep
+  # Split QMD^2 (not QMD itself) symmetrically between the two cohorts, so
+  # their combined quadratic mean stays locked to the target QMD no matter
+  # how far apart bimodal pulls them. Splitting QMD directly (the obvious
+  # approach) systematically inflates the realized QMD/Basal Area, because
+  # quadratic mean is convex: separating two values while holding their
+  # arithmetic center fixed always raises the quadratic mean above that
+  # center — worse the more they're separated (higher bimodal) and the
+  # wider each cohort already is (higher sd_dbh).
+  t        <- min(0.95, bimodal * 4 * (sd_dbh / qmd))
+  qmd_low  <- qmd * sqrt(1 - t)
+  qmd_high <- qmd * sqrt(1 + t)
   n1       <- round(n / 2)
   combined <- c(.draw_dbh(n1, qmd_low, sd_dbh), .draw_dbh(n - n1, qmd_high, sd_dbh))
   sample(combined)
