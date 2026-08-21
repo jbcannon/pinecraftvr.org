@@ -643,30 +643,82 @@
     return lines.join('\n');
   }
 
+  // Coarse basal-area grid, used to bias grass-stage clump placement
+  // toward canopy openings. Overstory trees block light in proportion to
+  // their basal area, so a cell with less live BA gets proportionally
+  // more weight when a clump's home cell is picked — a simplified stand-in
+  // for "regeneration favors gaps" that avoids the cost (and the infinite-
+  // retry risk in fully-stocked stands) of actually detecting gaps.
+  // Snags are excluded: a dead bole doesn't cast the shade a live crown
+  // does, so it shouldn't suppress regeneration around it.
+  var GAP_GRID_CELL_M = 20;
+  var GAP_WEIGHT_EXPONENT = 2.5; // higher = regen concentrates more sharply into the lowest-BA cells
+  function buildGapWeightedGrid(overstory, widthM, heightM) {
+    var cols = Math.max(1, Math.ceil(widthM / GAP_GRID_CELL_M));
+    var rows = Math.max(1, Math.ceil(heightM / GAP_GRID_CELL_M));
+    var cellW = widthM / cols;
+    var cellH = heightM / rows;
+    var cellBA = new Array(cols * rows).fill(0);
+
+    for (var i = 0; i < overstory.n; i++) {
+      if (!overstory.defects.Alive[i]) continue;
+      var col = Math.min(cols - 1, Math.floor(overstory.X[i] / cellW));
+      var row = Math.min(rows - 1, Math.floor(overstory.Y[i] / cellH));
+      var dbhM = overstory.DBH[i] / 100;
+      cellBA[row * cols + col] += (Math.PI / 4) * dbhM * dbhM;
+    }
+
+    var cumulative = [];
+    var running = 0;
+    for (var c = 0; c < cellBA.length; c++) {
+      running += Math.pow(1 / (1 + cellBA[c]), GAP_WEIGHT_EXPONENT); // lower BA -> higher weight
+      cumulative.push(running);
+    }
+    return { cols: cols, rows: rows, cellW: cellW, cellH: cellH, cumulative: cumulative, totalWeight: running };
+  }
+  function pickGapCell(grid, rng) {
+    var target = rng() * grid.totalWeight;
+    for (var i = 0; i < grid.cumulative.length; i++) {
+      if (target <= grid.cumulative[i]) return i;
+    }
+    return grid.cumulative.length - 1;
+  }
+
   // Grass-stage seedlings: a visual-only regeneration layer, not part of
   // the measurable stand (excluded from density/QMD/BA/histogram/results
   // table, matching "not interactable, simply visual" for this tree
   // class). Scattered in clumps of 1-20 (natural regeneration establishes
-  // in patches, not evenly) with roughly 1-2m spacing within a clump,
-  // regardless of the Natural/Planted pattern above. Not yet biased toward
-  // canopy gaps / away from overstory trees — clump centers are placed
-  // with enough margin from the plot edge that a typical scatter around
-  // them stays in-bounds on its own, and every point gets clamped to the
-  // plot afterward as a safety net so nothing ever lands outside it.
+  // in patches, not evenly) with roughly 1-2m spacing within a clump.
+  // Each clump's home cell is drawn from the gap-weighted grid above, so
+  // clumps preferentially land where local basal area (and so shading) is
+  // lowest; every point still gets clamped to the plot as a safety net.
   // Positions are generated once and reused for both the CSV and the
   // stem-map preview, so what you see matches what downloads.
-  function generateGrassStagePositions(n, widthM, heightM, rng) {
+  function generateGrassStagePositions(n, widthM, heightM, rng, gapGrid) {
     var X = [], Y = [];
     var MIN_CLUSTER = 1, MAX_CLUSTER = 20;
     var placed = 0;
     while (placed < n) {
       var clusterSize = Math.min(n - placed, MIN_CLUSTER + Math.floor(rng() * (MAX_CLUSTER - MIN_CLUSTER + 1)));
-      var spacing = 1 + rng() * 1; // this clump's target spacing, 1-2m (2x)
+      var spacing = 1 + rng() * 1; // this clump's target spacing, 1-2m
       var discR = spacing * Math.sqrt(clusterSize / Math.PI);
-      var marginX = Math.min(discR, widthM / 2);
-      var marginY = Math.min(discR, heightM / 2);
-      var cx = marginX + rng() * (widthM - 2 * marginX);
-      var cy = marginY + rng() * (heightM - 2 * marginY);
+
+      var cx, cy;
+      if (gapGrid) {
+        var cellIdx = pickGapCell(gapGrid, rng);
+        var col = cellIdx % gapGrid.cols;
+        var row = Math.floor(cellIdx / gapGrid.cols);
+        var cellXMin = col * gapGrid.cellW;
+        var cellYMin = row * gapGrid.cellH;
+        cx = cellXMin + rng() * gapGrid.cellW;
+        cy = cellYMin + rng() * gapGrid.cellH;
+      } else {
+        var marginX = Math.min(discR, widthM / 2);
+        var marginY = Math.min(discR, heightM / 2);
+        cx = marginX + rng() * (widthM - 2 * marginX);
+        cy = marginY + rng() * (heightM - 2 * marginY);
+      }
+
       for (var i = 0; i < clusterSize; i++) {
         var angle = rng() * Math.PI * 2;
         var r = discR * Math.sqrt(rng()); // uniform over the disc's area
@@ -1153,7 +1205,7 @@
       var grassDensityM = metricValueOf(grassInput, ACRES_PER_HA) || 0;
       var nGrass = Math.round(grassDensityM * result.areaHa);
       var grassPositions = nGrass > 0
-        ? generateGrassStagePositions(nGrass, widthM, heightM, rng)
+        ? generateGrassStagePositions(nGrass, widthM, heightM, rng, buildGapWeightedGrid(result, widthM, heightM))
         : { X: [], Y: [] };
       if (nGrass > 0) {
         csv += '\n' + grassStageCSVLines(grassPositions).join('\n');
