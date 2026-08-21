@@ -35,6 +35,14 @@
 #                 - Per-tree defect probabilities, 0-1. A snag is recorded
 #                   as dead with every other defect forced off. A snag
 #                   isn't also lopsided or fire-scarred, it's just dead.
+#   grass_density - Grass-stage regeneration density, trees per hectare
+#                   (default 0 = off). Visual-only seedlings, not part of
+#                   the measurable stand (excluded from density/QMD/BA).
+#                   Scattered in clumps of 1-20 with ~1-2m spacing between
+#                   seedlings, with clumps seeded preferentially into
+#                   low-basal-area cells of a coarse 20m grid laid over
+#                   the plot — lower local BA means less shade, so more
+#                   weight — rather than spread evenly across it.
 #   seed          - Optional integer for reproducibible output
 #   output_file   - Optional output path; auto-named CustomMap_YYYYMMDD*.csv
 #
@@ -111,6 +119,90 @@
   n1       <- round(n / 2)
   combined <- c(.draw_dbh(n1, qmd_low, sd_dbh), .draw_dbh(n - n1, qmd_high, sd_dbh))
   sample(combined)
+}
+
+# Coarse basal-area grid used to bias grass-stage clump placement toward
+# canopy openings (mirrors the web tool's Stand Generator exactly). Live
+# trees block light in proportion to their basal area, so a cell with less
+# live BA gets proportionally more weight when a clump's home cell is
+# picked — a simplified stand-in for "regeneration favors gaps" that
+# avoids the cost (and the infinite-retry risk in fully-stocked stands) of
+# actually detecting gaps. Snags are excluded: a dead bole doesn't cast
+# the shade a live crown does, so it shouldn't suppress regeneration
+# around it.
+.build_gap_weighted_grid <- function(x, y, dbh, alive, width, height,
+                                      cell_m = 20, weight_exponent = 2.5) {
+  cols   <- max(1, ceiling(width / cell_m))
+  rows   <- max(1, ceiling(height / cell_m))
+  cell_w <- width / cols
+  cell_h <- height / rows
+
+  cell_ba <- numeric(cols * rows)
+  for (i in seq_along(x)) {
+    if (alive[i] != 1) next
+    col <- min(cols - 1, floor(x[i] / cell_w))
+    row <- min(rows - 1, floor(y[i] / cell_h))
+    idx <- row * cols + col + 1
+    cell_ba[idx] <- cell_ba[idx] + (pi / 4) * (dbh[i] / 100)^2
+  }
+
+  weights <- (1 / (1 + cell_ba))^weight_exponent
+  list(cols = cols, rows = rows, cell_w = cell_w, cell_h = cell_h, weights = weights)
+}
+
+# Grass-stage seedlings: clumps of 1-20 (natural regeneration establishes
+# in patches, not evenly) with roughly 1-2m spacing within a clump. Each
+# clump's home cell is drawn from the gap-weighted grid above, so clumps
+# preferentially land where local basal area (and so shading) is lowest;
+# every point still gets clamped to the plot as a safety net.
+.generate_grass_stage_positions <- function(n, width, height, gap_grid) {
+  X <- numeric(0)
+  Y <- numeric(0)
+  placed <- 0
+  ncell  <- gap_grid$cols * gap_grid$rows
+  while (placed < n) {
+    cluster_size <- min(n - placed, sample.int(20, 1))
+    spacing      <- runif(1, 1, 2)   # this clump's target spacing, 1-2m
+    disc_r       <- spacing * sqrt(cluster_size / pi)
+
+    cell_idx <- sample.int(ncell, 1, prob = gap_grid$weights)
+    col <- (cell_idx - 1) %% gap_grid$cols
+    row <- (cell_idx - 1) %/% gap_grid$cols
+    cx  <- col * gap_grid$cell_w + runif(1, 0, gap_grid$cell_w)
+    cy  <- row * gap_grid$cell_h + runif(1, 0, gap_grid$cell_h)
+
+    angle <- runif(cluster_size, 0, 2 * pi)
+    r     <- disc_r * sqrt(runif(cluster_size))   # uniform over the disc's area
+    X <- c(X, pmax(0, pmin(width,  cx + cos(angle) * r)))
+    Y <- c(Y, pmax(0, pmin(height, cy + sin(angle) * r)))
+
+    placed <- placed + cluster_size
+  }
+  list(X = X, Y = Y)
+}
+
+# Grass-stage rows, formatted to the same CSV schema as .build_df() but
+# with placeholder Height/DBH and no defects — visual only, not measured.
+.grass_stage_df <- function(X, Y) {
+  n <- length(X)
+  data.frame(
+    X                 = sprintf("%.6f", X),
+    Y                 = sprintf("%.6f", Y),
+    Class             = "Grass Stage",
+    "Scientific Name" = "Pinus palustris",
+    "Common Name"     = "Longleaf Pine",
+    Alive             = "true",
+    Height            = sprintf("%.2f", rep(0.30, n)),
+    DBH               = sprintf("%.2f", rep(0.10, n)),
+    Lopsided          = rep(0L, n),
+    Leaning           = rep(0L, n),
+    Chlorosis         = rep(0L, n),
+    FireScar          = rep(0L, n),
+    Canker            = rep(0L, n),
+    Marked            = "false",
+    check.names       = FALSE,
+    stringsAsFactors  = FALSE
+  )
 }
 
 # Chapman-Richards H-D model calibrated to longleaf pine data.
@@ -194,6 +286,7 @@ generate_stem_map <- function(width,
                                p_firescar    = 0.018,
                                p_canker      = 0.012,
                                p_snag        = 0.04,
+                               grass_density = 0,
                                seed          = NULL,
                                output_file   = NULL) {
 
@@ -225,6 +318,20 @@ generate_stem_map <- function(width,
                            p_firescar, p_canker, p_snag)
   result  <- .make_result(X, Y, DBH, Height, defects, width, height)
 
+  n_grass <- round(grass_density * area_ha)
+  grass_x <- numeric(0)
+  grass_y <- numeric(0)
+  if (n_grass > 0) {
+    gap_grid  <- .build_gap_weighted_grid(X, Y, DBH, defects$Alive, width, height)
+    grass_pos <- .generate_grass_stage_positions(n_grass, width, height, gap_grid)
+    grass_x   <- grass_pos$X
+    grass_y   <- grass_pos$Y
+    result$df <- rbind(result$df, .grass_stage_df(grass_x, grass_y))
+    message(sprintf("Grass Stage: %d seedlings", n_grass))
+  }
+  result$grass_x <- grass_x
+  result$grass_y <- grass_y
+
   .write_output(result$df, output_file, suffix = "")
   invisible(result)
 }
@@ -245,6 +352,7 @@ generate_stem_map_grid <- function(width,
                                     p_firescar    = 0.018,
                                     p_canker      = 0.012,
                                     p_snag        = 0.04,
+                                    grass_density = 0,
                                     jitter        = 0.25,
                                     seed          = NULL,
                                     output_file   = NULL) {
@@ -299,6 +407,20 @@ generate_stem_map_grid <- function(width,
                            p_firescar, p_canker, p_snag)
   result  <- .make_result(X, Y, DBH, Height, defects, width, height)
 
+  n_grass <- round(grass_density * area_ha)
+  grass_x <- numeric(0)
+  grass_y <- numeric(0)
+  if (n_grass > 0) {
+    gap_grid  <- .build_gap_weighted_grid(X, Y, DBH, defects$Alive, width, height)
+    grass_pos <- .generate_grass_stage_positions(n_grass, width, height, gap_grid)
+    grass_x   <- grass_pos$X
+    grass_y   <- grass_pos$Y
+    result$df <- rbind(result$df, .grass_stage_df(grass_x, grass_y))
+    message(sprintf("Grass Stage: %d seedlings", n_grass))
+  }
+  result$grass_x <- grass_x
+  result$grass_y <- grass_y
+
   .write_output(result$df, output_file, suffix = "_grid")
   invisible(result)
 }
@@ -309,7 +431,9 @@ generate_stem_map_grid <- function(width,
 # Stem map: dots positioned like the real stand, sized by DBH, colored by
 # defect status. Matches the web tool's preview: green = healthy, black =
 # fire scar, amber = another defect (asymmetric crown/leaning/chlorosis/
-# canker), and snags are plotted as solid black regardless of size.
+# canker), snags are plotted as solid black regardless of size, and (if
+# grass_density was set) grass-stage seedlings are drawn as small pale
+# dots underneath, same as the web tool's preview.
 plot_stem_map <- function(result) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop('This needs the ggplot2 package: install.packages("ggplot2")')
@@ -324,8 +448,17 @@ plot_stem_map <- function(result) {
 
   df <- data.frame(X = result$X, Y = result$Y, DBH = result$DBH, Status = status)
 
-  ggplot2::ggplot(df, ggplot2::aes(x = X, y = Y, size = DBH, color = Status)) +
-    ggplot2::geom_point(alpha = 0.85) +
+  gg <- ggplot2::ggplot()
+
+  if (!is.null(result$grass_x) && length(result$grass_x) > 0) {
+    grass_df <- data.frame(X = result$grass_x, Y = result$grass_y)
+    gg <- gg + ggplot2::geom_point(data = grass_df, ggplot2::aes(x = X, y = Y),
+                                    color = "#c4d678", alpha = 0.5, size = 0.8)
+  }
+
+  gg +
+    ggplot2::geom_point(data = df, ggplot2::aes(x = X, y = Y, size = DBH, color = Status),
+                        alpha = 0.85) +
     ggplot2::scale_color_manual(values = c(
       "Healthy"      = "#7fc25c",
       "Fire Scar"    = "#191614",
@@ -374,3 +507,8 @@ plot_diameter_distribution <- function(result) {
 # result_bimodal <- generate_stem_map(width = 100, height = 100, density = 150,
 #                                      qmd = 30, sd_dbh = 6, bimodal = 1, seed = 42)
 # plot_diameter_distribution(result_bimodal)
+#
+# Grass-stage regeneration, seeded preferentially into canopy openings:
+# result_regen <- generate_stem_map(width = 100, height = 100, density = 150,
+#                                    qmd = 30, sd_dbh = 6, grass_density = 250, seed = 42)
+# plot_stem_map(result_regen)
