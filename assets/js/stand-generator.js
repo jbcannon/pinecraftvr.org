@@ -879,11 +879,15 @@
     previewState = { trees: trees, cssW: cssW, cssH: cssH };
   }
 
-  canvas.addEventListener('mousemove', function (e) {
+  // Shared by mouse hover and touch tap, so the tooltip works on phones
+  // too — canvases have no native hover concept, and touch devices don't
+  // fire mousemove/mouseleave at all, so those alone leave touch users
+  // with a preview they can look at but never get details from.
+  function updatePreviewTooltip(clientX, clientY) {
     if (!previewState) return;
     var rect = canvas.getBoundingClientRect();
-    var mx = e.clientX - rect.left;
-    var my = e.clientY - rect.top;
+    var mx = clientX - rect.left;
+    var my = clientY - rect.top;
 
     var nearest = null, nearestDist = 10; // px hit radius
     for (var i = 0; i < previewState.trees.length; i++) {
@@ -911,8 +915,24 @@
     } else {
       tooltipEl.classList.remove('is-visible');
     }
+  }
+  canvas.addEventListener('mousemove', function (e) {
+    updatePreviewTooltip(e.clientX, e.clientY);
   });
   canvas.addEventListener('mouseleave', function () {
+    tooltipEl.classList.remove('is-visible');
+  });
+  canvas.addEventListener('touchstart', function (e) {
+    if (e.touches.length !== 1) return;
+    updatePreviewTooltip(e.touches[0].clientX, e.touches[0].clientY);
+    e.preventDefault(); // this canvas is a display, not scrollable content
+  }, { passive: false });
+  canvas.addEventListener('touchmove', function (e) {
+    if (e.touches.length !== 1) return;
+    updatePreviewTooltip(e.touches[0].clientX, e.touches[0].clientY);
+    e.preventDefault();
+  }, { passive: false });
+  canvas.addEventListener('touchend', function () {
     tooltipEl.classList.remove('is-visible');
   });
 
@@ -1047,10 +1067,14 @@
   function drawHistogram(result, us) {
     // Bins are 2cm wide on the underlying metric DBH, snapped to clean
     // 2cm breaks (not an arbitrary continuous width), same breaks
-    // regardless of which units are currently displayed.
+    // regardless of which units are currently displayed. Fixed 0-to-max-QMD
+    // frame (same choice as the Projected Diameter Distribution preview)
+    // rather than auto-zooming to this stand's actual min/max, so the axis
+    // stays put and stands are easy to compare. A DBH past this (possible
+    // with a high SD or bimodal spread) just folds into the last bin.
     var BIN_WIDTH_CM = 2;
-    var minCm = Math.floor(Math.min.apply(null, result.DBH) / BIN_WIDTH_CM) * BIN_WIDTH_CM;
-    var maxCm = Math.ceil(Math.max.apply(null, result.DBH) / BIN_WIDTH_CM) * BIN_WIDTH_CM;
+    var minCm = 0;
+    var maxCm = Math.ceil(METRIC_BOUNDS.qmd[1] / BIN_WIDTH_CM) * BIN_WIDTH_CM;
     var binCount = Math.max(1, Math.round((maxCm - minCm) / BIN_WIDTH_CM));
     var bins = new Array(binCount).fill(0);
     result.DBH.forEach(function (dbh) {
