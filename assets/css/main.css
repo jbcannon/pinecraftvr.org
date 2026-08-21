@@ -882,6 +882,11 @@ table.specs th {
   flex: 1;
   accent-color: var(--accent-cyan);
 }
+/* Fully draggable, just visually inert — a "coming soon" slider whose
+   value gets reset to 0 in JS regardless of where it's dragged. */
+.slider-field input[type="range"].is-inert {
+  accent-color: var(--ink-soft);
+}
 .slider-field input[type="number"] {
   width: 80px;
   flex: none;

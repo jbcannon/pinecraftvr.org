@@ -78,6 +78,7 @@
   var qmdInput = document.getElementById('sg-qmd');
   var sdInput = document.getElementById('sg-sd');
   var baInput = document.getElementById('sg-ba');
+  var grassInput = document.getElementById('sg-grass');
   var bimodalRange = document.getElementById('sg-bimodal-range');
 
   var widthRange = document.getElementById('sg-width-range');
@@ -86,6 +87,7 @@
   var qmdRange = document.getElementById('sg-qmd-range');
   var sdRange = document.getElementById('sg-sd-range');
   var baRange = document.getElementById('sg-ba-range');
+  var grassRange = document.getElementById('sg-grass-range');
 
   var widthScale = {
     min: document.getElementById('sg-width-scale-min'),
@@ -101,6 +103,11 @@
     min: document.getElementById('sg-density-scale-min'),
     mid: document.getElementById('sg-density-scale-mid'),
     max: document.getElementById('sg-density-scale-max')
+  };
+  var grassScale = {
+    min: document.getElementById('sg-grass-scale-min'),
+    mid: document.getElementById('sg-grass-scale-mid'),
+    max: document.getElementById('sg-grass-scale-max')
   };
   var qmdScale = {
     min: document.getElementById('sg-qmd-scale-min'),
@@ -151,8 +158,22 @@
   linkSlider(qmdRange, qmdInput);
   linkSlider(sdRange, sdInput);
   linkSlider(baRange, baInput);
-  ['lopsided', 'leaning', 'chlorosis', 'firescar', 'canker', 'snag'].forEach(function (id) {
+  linkSlider(grassRange, grassInput);
+  ['lopsided', 'chlorosis', 'firescar', 'canker', 'snag', 'forked'].forEach(function (id) {
     linkSlider(document.getElementById('sg-' + id + '-range'), document.getElementById('sg-' + id));
+  });
+
+  // Forked Trees ("Coming Soon"): fully draggable/typeable like any other
+  // slider, but not wired into generation at all — and to make that
+  // obvious rather than silently ignored, its value snaps back to 0 right
+  // after every interaction, no matter where the slider was moved to.
+  var forkedRange = document.getElementById('sg-forked-range');
+  var forkedInput = document.getElementById('sg-forked');
+  [forkedRange, forkedInput].forEach(function (el) {
+    el.addEventListener('input', function () {
+      forkedRange.value = '0';
+      forkedInput.value = '0';
+    });
   });
 
   function syncRangeToNumber(rangeEl, numberEl) {
@@ -227,6 +248,7 @@
   var qmdUnitEl = document.getElementById('sg-qmd-unit');
   var sdUnitEl = document.getElementById('sg-sd-unit');
   var baUnitEl = document.getElementById('sg-ba-unit');
+  var grassUnitEl = document.getElementById('sg-grass-unit');
 
   function toMetric(usValue, factor) { return usValue * factor; }
   function toUS(metricValue, factor) { return metricValue / factor; }
@@ -243,7 +265,8 @@
   // toggling back and forth can't drift the bounds.
   var METRIC_BOUNDS = {
     width: [10, 304.8], height: [10, 304.8],
-    density: [10, 1980], qmd: [2.54, 100], sd: [1, 30], ba: [0.1, 57.4]
+    density: [10, 1980], qmd: [2.54, 100], sd: [1, 30], ba: [0.1, 57.4],
+    grass: [0, 1200]
   };
   function setRangeBounds(rangeEl, metricMin, metricMax, factor, toUSUnits) {
     rangeEl.min = round1(toUSUnits ? toUS(metricMin, factor) : metricMin);
@@ -260,7 +283,8 @@
     density: { metric: 5,   us: 2 },
     qmd:     { metric: 0.5, us: 0.25 },
     sd:      { metric: 0.5, us: 0.25 },
-    ba:      { metric: 0.1, us: 0.5 }
+    ba:      { metric: 0.1, us: 0.5 },
+    grass:   { metric: 10,  us: 5 }
   };
   function setRangeStep(rangeEl, field, toUSUnits) {
     rangeEl.step = toUSUnits ? STEP_BY_UNIT[field].us : STEP_BY_UNIT[field].metric;
@@ -281,30 +305,35 @@
     convertFieldValue(qmdInput, CM_PER_IN, us);
     convertFieldValue(sdInput, CM_PER_IN, us);
     convertFieldValue(baInput, BA_FACTOR, us);
+    convertFieldValue(grassInput, ACRES_PER_HA, us);
     setRangeBounds(widthRange, METRIC_BOUNDS.width[0], METRIC_BOUNDS.width[1], M_PER_FT, us);
     setRangeBounds(heightRange, METRIC_BOUNDS.height[0], METRIC_BOUNDS.height[1], M_PER_FT, us);
     setRangeBounds(densityRange, METRIC_BOUNDS.density[0], METRIC_BOUNDS.density[1], ACRES_PER_HA, us);
     setRangeBounds(qmdRange, METRIC_BOUNDS.qmd[0], METRIC_BOUNDS.qmd[1], CM_PER_IN, us);
     setRangeBounds(sdRange, METRIC_BOUNDS.sd[0], METRIC_BOUNDS.sd[1], CM_PER_IN, us);
     setRangeBounds(baRange, METRIC_BOUNDS.ba[0], METRIC_BOUNDS.ba[1], BA_FACTOR, us);
+    setRangeBounds(grassRange, METRIC_BOUNDS.grass[0], METRIC_BOUNDS.grass[1], ACRES_PER_HA, us);
     setRangeStep(widthRange, 'width', us);
     setRangeStep(heightRange, 'height', us);
     setRangeStep(densityRange, 'density', us);
     setRangeStep(qmdRange, 'qmd', us);
     setRangeStep(sdRange, 'sd', us);
     setRangeStep(baRange, 'ba', us);
+    setRangeStep(grassRange, 'grass', us);
     setRangeScale(widthRange, widthScale);
     setRangeScale(heightRange, heightScale);
     setRangeScale(densityRange, densityScale);
     setRangeScale(qmdRange, qmdScale);
     setRangeScale(sdRange, sdScale);
     setRangeScale(baRange, baScale);
+    setRangeScale(grassRange, grassScale);
     syncRangeToNumber(widthRange, widthInput);
     syncRangeToNumber(heightRange, heightInput);
     syncRangeToNumber(densityRange, densityInput);
     syncRangeToNumber(qmdRange, qmdInput);
     syncRangeToNumber(sdRange, sdInput);
     syncRangeToNumber(baRange, baInput);
+    syncRangeToNumber(grassRange, grassInput);
 
     widthUnitEl.textContent = us ? 'ft' : 'm';
     heightUnitEl.textContent = us ? 'ft' : 'm';
@@ -312,6 +341,7 @@
     qmdUnitEl.textContent = us ? 'in' : 'cm';
     sdUnitEl.textContent = us ? 'in' : 'cm';
     baUnitEl.innerHTML = us ? 'ft&sup2;/acre' : 'm&sup2;/ha';
+    grassUnitEl.textContent = us ? 'acre' : 'ha';
 
     updateDerived();
     drawDistributionPreview();
@@ -613,8 +643,61 @@
     return lines.join('\n');
   }
 
+  // Grass-stage seedlings: a visual-only regeneration layer, not part of
+  // the measurable stand (excluded from density/QMD/BA/histogram/results
+  // table, matching "not interactable, simply visual" for this tree
+  // class). Scattered in clumps of 1-20 (natural regeneration establishes
+  // in patches, not evenly) with roughly 1-2m spacing within a clump,
+  // regardless of the Natural/Planted pattern above. Not yet biased toward
+  // canopy gaps / away from overstory trees — clump centers are placed
+  // with enough margin from the plot edge that a typical scatter around
+  // them stays in-bounds on its own, and every point gets clamped to the
+  // plot afterward as a safety net so nothing ever lands outside it.
+  // Positions are generated once and reused for both the CSV and the
+  // stem-map preview, so what you see matches what downloads.
+  function generateGrassStagePositions(n, widthM, heightM, rng) {
+    var X = [], Y = [];
+    var MIN_CLUSTER = 1, MAX_CLUSTER = 20;
+    var placed = 0;
+    while (placed < n) {
+      var clusterSize = Math.min(n - placed, MIN_CLUSTER + Math.floor(rng() * (MAX_CLUSTER - MIN_CLUSTER + 1)));
+      var spacing = 1 + rng() * 1; // this clump's target spacing, 1-2m (2x)
+      var discR = spacing * Math.sqrt(clusterSize / Math.PI);
+      var marginX = Math.min(discR, widthM / 2);
+      var marginY = Math.min(discR, heightM / 2);
+      var cx = marginX + rng() * (widthM - 2 * marginX);
+      var cy = marginY + rng() * (heightM - 2 * marginY);
+      for (var i = 0; i < clusterSize; i++) {
+        var angle = rng() * Math.PI * 2;
+        var r = discR * Math.sqrt(rng()); // uniform over the disc's area
+        X.push(Math.max(0, Math.min(widthM, cx + Math.cos(angle) * r)));
+        Y.push(Math.max(0, Math.min(heightM, cy + Math.sin(angle) * r)));
+      }
+      placed += clusterSize;
+    }
+    return { X: X, Y: Y };
+  }
+  function grassStageCSVLines(pos) {
+    var lines = [];
+    for (var i = 0; i < pos.X.length; i++) {
+      lines.push([
+        pos.X[i].toFixed(6),
+        pos.Y[i].toFixed(6),
+        'Grass Stage',
+        'Pinus palustris',
+        'Longleaf Pine',
+        'true',
+        '0.30',
+        '0.10',
+        0, 0, 0, 0, 0,
+        'false'
+      ].join(','));
+    }
+    return lines;
+  }
+
   // ── Stand preview (canvas scatter, sized by DBH) ────────────────────────
-  function drawPreview(result, widthM, heightM) {
+  function drawPreview(result, widthM, heightM, grassPositions) {
     var maxCssPx = 640;
     var scale = maxCssPx / Math.max(widthM, heightM);
     var cssW = widthM * scale;
@@ -627,6 +710,23 @@
     canvas.height = cssH * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, cssW, cssH);
+
+    // Grass-stage seedlings drawn first, as a background layer under the
+    // measured overstory — small, distinct, and deliberately not part of
+    // `trees` below, so they never register in the hover tooltip (they're
+    // non-interactable in Pinecraft itself).
+    if (grassPositions && grassPositions.X.length) {
+      var GRASS_R = 2.4;
+      ctx.fillStyle = 'rgba(196, 214, 120, 0.7)';
+      ctx.beginPath();
+      for (var g = 0; g < grassPositions.X.length; g++) {
+        var gx = grassPositions.X[g] * scale;
+        var gy = cssH - grassPositions.Y[g] * scale;
+        ctx.moveTo(gx + GRASS_R, gy);
+        ctx.arc(gx, gy, GRASS_R, 0, Math.PI * 2);
+      }
+      ctx.fill();
+    }
 
     var dbhMin = Math.min.apply(null, result.DBH);
     var dbhMax = Math.max.apply(null, result.DBH);
@@ -1037,7 +1137,10 @@
         widthM: widthM, heightM: heightM, density: density, qmd: qmd, sd: sd,
         bimodal: parseFloat(document.getElementById('sg-bimodal-range').value) || 0,
         pLopsided: parseFloat(document.getElementById('sg-lopsided').value) / 100,
-        pLeaning: parseFloat(document.getElementById('sg-leaning').value) / 100,
+        // Leaning: not confirmed as a required CSV column by the game (see
+        // source-code check), and its slider is hidden pending that. Always
+        // 0 here so the column still exists in the output, just inert.
+        pLeaning: 0,
         pChlorosis: parseFloat(document.getElementById('sg-chlorosis').value) / 100,
         pFirescar: parseFloat(document.getElementById('sg-firescar').value) / 100,
         pCanker: parseFloat(document.getElementById('sg-canker').value) / 100,
@@ -1046,6 +1149,15 @@
 
       var result = pattern === 'grid' ? generateGrid(params, rng) : generateRandom(params, rng);
       var csv = buildCSV(result);
+
+      var grassDensityM = metricValueOf(grassInput, ACRES_PER_HA) || 0;
+      var nGrass = Math.round(grassDensityM * result.areaHa);
+      var grassPositions = nGrass > 0
+        ? generateGrassStagePositions(nGrass, widthM, heightM, rng)
+        : { X: [], Y: [] };
+      if (nGrass > 0) {
+        csv += '\n' + grassStageCSVLines(grassPositions).join('\n');
+      }
 
       var now = new Date();
       var dateStr = now.getFullYear() + pad(now.getMonth() + 1) + pad(now.getDate());
@@ -1057,7 +1169,7 @@
       lastFilename = filename;
       downloadBtn.disabled = false;
 
-      drawPreview(result, widthM, heightM);
+      drawPreview(result, widthM, heightM, grassPositions);
       drawHistogram(result, us);
 
       var actualQmdMetric = Math.sqrt(mean(result.DBH.map(function (d) { return d * d; })));
